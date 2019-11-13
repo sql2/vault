@@ -46,7 +46,7 @@ $(shell mkdir -p \
 PKG_INDEXES := $(shell seq $(PKG_COUNT))
 DEFAULTS := $(addprefix $(DEFAULTS_DIR)/,$(addsuffix .json,$(PKG_INDEXES)))
 RENDERED := $(addprefix $(RENDERED_DIR)/,$(addsuffix .json,$(PKG_INDEXES)))
-RENDERED_LAYERS := $(addprefix $(RENDERED_LAYERS_DIR)/,$(addsuffix .json,$(PKG_INDEXES)))
+RENDERED_LAYERS := $(addprefix $(RENDERED_LAYERS_DIR)/,$(addsuffix .yml,$(PKG_INDEXES)))
 PACKAGES := $(addprefix $(PACKAGES_DIR)/,$(addsuffix .json,$(PKG_INDEXES)))
 COMMANDS := $(addprefix $(COMMANDS_DIR)/,$(addsuffix .sh,$(PKG_INDEXES)))
 
@@ -170,12 +170,10 @@ $(LOCK): $(LIST)
 	@echo "### ***" >> $@
 	@cat $< >> $@
 
-$(RENDERED_LAYERS_DIR)/%.json: $(PACKAGES_DIR)/%.json $(LAYER_TEMPLATES)
-	@OUT=$@.yml; rm -f $$OUT; \
+$(RENDERED_LAYERS_DIR)/%.yml: $(PACKAGES_DIR)/%.json $(LAYER_TEMPLATES)
+	@OUT=$@; rm -f $$OUT; \
 	find $(LAYER_TEMPLATE_DIR) -mindepth 1 -maxdepth 1 | while read -r T; do \
 	  TNAME=$$(basename $$T); \
 	  echo "$$TNAME: |" >> $$OUT; \
 	  gomplate -f $$T -d vars=$< | sed 's/^/  /g' >> $$OUT; \
-	done; \
-	yq . < $$OUT > $@; rm -f $$OUT
-
+	done;
