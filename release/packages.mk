@@ -2,6 +2,7 @@
 #
 # packages.mk is responsible for compiling packages.yml to packages.lock
 # by expanding its packages using all defaults and templates.
+# It also generates the layered Dockerfiles for each package.
 
 SHELL := /usr/bin/env bash -euo pipefail -c
 
@@ -20,7 +21,7 @@ DEFAULTS_DIR := .tmp/defaults
 RENDERED_DIR := .tmp/rendered
 PACKAGES_DIR := .tmp/packages
 COMMANDS_DIR := .tmp/commands
-DOCKER_LAYERS_DIR := .tmp/dockerlayers
+RENDERED_LAYERS_DIR := .tmp/rendered-layers
 DEFAULTS_WITH_ENV := .tmp/defaults-with-env.json
 LIST := .tmp/list.yml
 
@@ -37,7 +38,7 @@ $(shell mkdir -p \
 	$(RENDERED_DIR) \
 	$(PACKAGES_DIR) \
 	$(COMMANDS_DIR) \
-	$(DOCKER_LAYERS_DIR) \
+	$(RENDERED_LAYERS_DIR) \
 )
 
 # PKG_INDEXES is just the numbers 1..PKG_COUNT, we use this to generate filenames
@@ -45,6 +46,7 @@ $(shell mkdir -p \
 PKG_INDEXES := $(shell seq $(PKG_COUNT))
 DEFAULTS := $(addprefix $(DEFAULTS_DIR)/,$(addsuffix .json,$(PKG_INDEXES)))
 RENDERED := $(addprefix $(RENDERED_DIR)/,$(addsuffix .json,$(PKG_INDEXES)))
+RENDERED_LAYERS := $(addprefix $(RENDERED_LAYERS_DIR)/,$(addsuffix .json,$(PKG_INDEXES)))
 PACKAGES := $(addprefix $(PACKAGES_DIR)/,$(addsuffix .json,$(PKG_INDEXES)))
 COMMANDS := $(addprefix $(COMMANDS_DIR)/,$(addsuffix .sh,$(PKG_INDEXES)))
 
@@ -75,6 +77,9 @@ packages: $(PACKAGES)
 	@cat $^
 
 rendered: $(RENDERED)
+	@cat $^
+	
+rendered-layers: $(RENDERED_LAYERS)
 	@cat $^
 
 defaults-with-env: $(DEFAULTS_WITH_ENV)
@@ -133,7 +138,7 @@ $(RENDERED_DIR)/%.json: $(DEFAULTS_DIR)/%.json $(TEMPLATES)
 	find $(TEMPLATE_DIR) -mindepth 1 -maxdepth 1 | while read -r T; do \
 	  TNAME=$$(basename $$T); \
 	  echo -n "$$TNAME: " >> $$OUT; \
-	  cat $< | gomplate -f $$T -d vars=$< | xargs >> $$OUT; \
+	  gomplate -f $$T -d vars=$< | xargs >> $$OUT; \
 	done; \
 	yq . < $$OUT > $@; rm -f $$OUT
 
@@ -165,6 +170,12 @@ $(LOCK): $(LIST)
 	@echo "### ***" >> $@
 	@cat $< >> $@
 
-$(DOCKER_LAYERS_DIR)/%.json: $(PACKAGES_DIR)/%.json $(SPEC) $(LOCK)
-
+$(RENDERED_LAYERS_DIR)/%.json: $(PACKAGES_DIR)/%.json $(LAYER_TEMPLATES)
+	@OUT=$@.yml; rm -f $$OUT; \
+	find $(LAYER_TEMPLATE_DIR) -mindepth 1 -maxdepth 1 | while read -r T; do \
+	  TNAME=$$(basename $$T); \
+	  echo "$$TNAME: |" >> $$OUT; \
+	  gomplate -f $$T -d vars=$< | sed 's/^/  /g' >> $$OUT; \
+	done; \
+	yq . < $$OUT > $@; rm -f $$OUT
 
