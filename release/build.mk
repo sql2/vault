@@ -8,7 +8,7 @@ SHELL := /usr/bin/env bash -euo pipefail -c
 THIS_FILE := $(lastword $(MAKEFILE_LIST))
 THIS_DIR := $(shell dirname $(THIS_FILE))
 
-DOCKERFILES_DIR := $(THIS_DIR)/layers
+DOCKERFILES_DIR := $(THIS_DIR)/.tmp/layers
 include $(THIS_DIR)/layer.mk
 
 ### BUILDER_IMAGE_LAYERS

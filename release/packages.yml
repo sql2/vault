@@ -39,6 +39,9 @@ defaults:
   # GO_VERSION is the version of the Go toolchain to use to compile this package.
   GO_VERSION: 1.12.13
 
+  # YARN_VERSION is the version of Yarn to install for the UI layer.
+  YARN_VERSION: 1.19.1-1
+
   # BUILD_TAGS are passed as-is to the -tag flag of 'go build'. It should be
   # a comma or space separated list, depending on the GO_VERSION you are using.
   BUILD_TAGS: vault
@@ -106,3 +109,85 @@ packages:
   - { GOOS: solaris, GOARCH: amd64 }
   - { GOOS: windows, GOARCH: 386 }
   - { GOOS: windows, GOARCH: amd64 }
+
+# Layers determines the build layers, which are individually cacheable layers
+# in a linear build. Each layer contains a partial Dockerfile. All the layers
+# together produce the final builder image used to compile binaries.
+#
+# The partial Dockerfiles may contain references to any of the variables
+# including rendered template variables. The checksum of the cumulative
+# layers up to each layer is calculated using the source included as well
+# as the rendered Dockerfile. Thus you can control cacheability by careful
+# use of variables. It is recommended not to use any variables that vary per-
+# package in these Dockerfiles, as that enables a single docker image to be
+# produced per set of packages.
+#
+# The order of layers is significant. The first layer must have a FROM line, and
+# forms the base image. Each subsequent layer begins from the previous one.
+layers:
+  - name: base
+    source-include: ""
+    source-exclude: ""
+    dockerfile: |
+      FROM debian:buster
+      RUN apt-get update -y && apt-get install --no-install-recommends -y -q \
+                               curl \
+                               zip \
+                               build-essential \
+                               gcc-multilib \
+                               g++-multilib \
+                               ca-certificates \
+                               git mercurial bzr \
+                               gnupg \
+                               libltdl-dev \
+                               libltdl7 \
+      						             bash
+      RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
+      RUN curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+      RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
+      RUN apt-get update -y && apt-get install -y -q nodejs yarn={{.YARN_VERSION}}
+      RUN rm -rf /var/lib/apt/lists/*
+
+      ENV GOPATH /gopath
+      ENV GOROOT /goroot
+
+      RUN mkdir $GOROOT && mkdir $GOPATH
+
+      RUN curl https://storage.googleapis.com/golang/go{{.GO_VERSION}}.linux-amd64.tar.gz \
+                 | tar xvzf - -C $GOROOT --strip-components=1
+
+      ENV PATH $GOROOT/bin:$GOPATH/bin:$PATH
+
+      RUN go get golang.org/x/tools/cmd/goimports
+      RUN go get github.com/mitchellh/gox
+      RUN go get github.com/hashicorp/go-bindata
+      RUN go get github.com/hashicorp/go-bindata/go-bindata
+      RUN go get github.com/elazarl/go-bindata-assetfs
+      RUN go get github.com/elazarl/go-bindata-assetfs/go-bindata-assetfs
+
+      ENV REPO=github.com/hashicorp/vault
+      ENV DIR=$GOPATH/src/$REPO
+
+      RUN mkdir -p $DIR
+
+      WORKDIR $DIR
+
+  - name: yarn
+    source-include: ui/package.json ui/yarn.lock
+    source-exclude: ""
+    dockerfile: |
+      COPY . ./
+      RUN cd ui && yarn install
+      RUN cd ui && npm rebuild node-sass
+  - name: ui
+    source-include: ui/
+    source-exclude: ""
+    dockerfile: |
+      COPY ui ./ui
+      RUN cd ui && yarn run build
+  - name: static
+    source-include: .
+    source-exclude: .circleci/ release/
+    dockerfile: |
+      COPY . ./
+      RUN make static-assets
