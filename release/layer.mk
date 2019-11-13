@@ -126,10 +126,8 @@ $(1)_SOURCE_ID           = $$(shell if [ $$($(1)_SOURCE_MODIFIED) == NO ] && [ -
 								   echo -n dirty_; echo $$($(1)_SOURCE_MODIFIED_SUM) $$($(1)_SOURCE_NEW_SUM) | $(SUM); \
 							   fi)
 
-# Ensure the source list is written, the cache dir exists and the current link is up to date.
-_ := $$(shell \
-	mkdir -p $$($(1)_CACHE); \
-	if [ ! -f $$($(1)_SOURCE_LIST) ]; then $$($(1)_SOURCE_CMD) > $$($(1)_SOURCE_LIST); fi;)
+# Ensure the source list is written and the cache dir exists.
+_ := $$(shell mkdir -p $$($(1)_CACHE); $$($(1)_SOURCE_CMD) > $$($(1)_SOURCE_LIST))
 
 $(1)_SOURCE := $$(shell cat $$($(1)_SOURCE_LIST))
 
