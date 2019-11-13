@@ -15,10 +15,12 @@ LOCK := packages.lock
 
 # Temporary files.
 TEMPLATE_DIR := .tmp/templates
+LAYER_TEMPLATE_DIR := .tmp/layer-templates
 DEFAULTS_DIR := .tmp/defaults
 RENDERED_DIR := .tmp/rendered
 PACKAGES_DIR := .tmp/packages
 COMMANDS_DIR := .tmp/commands
+DOCKER_LAYERS_DIR := .tmp/dockerlayers
 DEFAULTS_WITH_ENV := .tmp/defaults-with-env.json
 LIST := .tmp/list.yml
 
@@ -30,10 +32,12 @@ MAKEFLAGS += -j$(PKG_COUNT)
 # Ensure the temp directories exist.
 $(shell mkdir -p \
 	$(TEMPLATE_DIR) \
+	$(LAYER_TEMPLATE_DIR) \
 	$(DEFAULTS_DIR) \
 	$(RENDERED_DIR) \
 	$(PACKAGES_DIR) \
 	$(COMMANDS_DIR) \
+	$(DOCKER_LAYERS_DIR) \
 )
 
 # PKG_INDEXES is just the numbers 1..PKG_COUNT, we use this to generate filenames
@@ -46,6 +50,9 @@ COMMANDS := $(addprefix $(COMMANDS_DIR)/,$(addsuffix .sh,$(PKG_INDEXES)))
 
 TEMPLATE_NAMES := $(shell yq -r '.templates | keys[]' < $(SPEC))
 TEMPLATES := $(addprefix $(TEMPLATE_DIR)/,$(TEMPLATE_NAMES))
+
+LAYER_NAMES := $(shell yq -r '.layers[] | .name' < $(SPEC))
+LAYER_TEMPLATES := $(addprefix $(LAYER_TEMPLATE_DIR)/,$(LAYER_NAMES))
 
 ## PHONY targets for human use.
 
@@ -79,6 +86,9 @@ defaults: $(DEFAULTS)
 templates: $(TEMPLATES)
 	@echo Templates updated: $^
 
+layer-templates: $(LAYER_TEMPLATES)
+	@echo Layer templates update $^
+
 .PHONY: list lock commands packages rendered defaults templates
 
 ## END PHONY targets.
@@ -88,6 +98,11 @@ templates: $(TEMPLATES)
 $(TEMPLATE_DIR)/%: $(SPEC) $(THIS_FILE)
 	@echo -n '{{$$d := (datasource "vars")}}{{with $$d}}' > $@; \
 		yq -r ".templates.$*" $< >> $@; \
+		echo "{{end}}" >> $@
+
+$(LAYER_TEMPLATE_DIR)/%: $(SPEC) $(THIS_FILE)
+	@echo -n '{{$$d := (datasource "vars")}}{{with $$d}}' > $@; \
+		yq -r '.layers[] | select(.name == "$*") | .dockerfile' $< >> $@; \
 		echo "{{end}}" >> $@
 
 .PHONY: $(DEFAULTS_WITH_ENV)
@@ -149,3 +164,7 @@ $(LOCK): $(LIST)
 	@echo "### INSTEAD: Edit or merge the source in this directory then run 'make $@'." >> $@
 	@echo "### ***" >> $@
 	@cat $< >> $@
+
+$(DOCKER_LAYERS_DIR)/%.json: $(PACKAGES_DIR)/%.json $(SPEC) $(LOCK)
+
+
