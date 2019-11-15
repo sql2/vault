@@ -3,6 +3,9 @@ SHELL := /usr/bin/env bash -euo pipefail -c
 .PHONY: packages build
 
 packages:
+	@# Remove layers.lock entirely to avoid buildup of old layers.
+	@# Easier to do that here than in packages.mk.
+	@rm -rf layers.lock
 	@$(MAKE) -f packages.mk lock
 
 commands:
