@@ -646,12 +646,19 @@ github.com/stretchr/testify/require
 # github.com/tv42/httpunix v0.0.0-20150427012821-b75d8614f926
 github.com/tv42/httpunix
 # github.com/tyrannosaurus-becks/gokrb5 v0.0.0-20191111224307-01cf50c9a364
+github.com/tyrannosaurus-becks/gokrb5/spnego
 github.com/tyrannosaurus-becks/gokrb5/client
 github.com/tyrannosaurus-becks/gokrb5/config
 github.com/tyrannosaurus-becks/gokrb5/keytab
 github.com/tyrannosaurus-becks/gokrb5/service
-github.com/tyrannosaurus-becks/gokrb5/spnego
+github.com/tyrannosaurus-becks/gokrb5/asn1tools
 github.com/tyrannosaurus-becks/gokrb5/credentials
+github.com/tyrannosaurus-becks/gokrb5/gssapi
+github.com/tyrannosaurus-becks/gokrb5/iana/chksumtype
+github.com/tyrannosaurus-becks/gokrb5/iana/msgtype
+github.com/tyrannosaurus-becks/gokrb5/krberror
+github.com/tyrannosaurus-becks/gokrb5/messages
+github.com/tyrannosaurus-becks/gokrb5/types
 github.com/tyrannosaurus-becks/gokrb5/crypto
 github.com/tyrannosaurus-becks/gokrb5/crypto/etype
 github.com/tyrannosaurus-becks/gokrb5/iana/errorcode
@@ -660,24 +667,17 @@ github.com/tyrannosaurus-becks/gokrb5/iana/keyusage
 github.com/tyrannosaurus-becks/gokrb5/iana/nametype
 github.com/tyrannosaurus-becks/gokrb5/iana/patype
 github.com/tyrannosaurus-becks/gokrb5/kadmin
-github.com/tyrannosaurus-becks/gokrb5/krberror
-github.com/tyrannosaurus-becks/gokrb5/messages
-github.com/tyrannosaurus-becks/gokrb5/types
 github.com/tyrannosaurus-becks/gokrb5/iana/etypeID
-github.com/tyrannosaurus-becks/gokrb5/asn1tools
-github.com/tyrannosaurus-becks/gokrb5/gssapi
-github.com/tyrannosaurus-becks/gokrb5/iana/chksumtype
-github.com/tyrannosaurus-becks/gokrb5/iana/msgtype
-github.com/tyrannosaurus-becks/gokrb5/crypto/common
-github.com/tyrannosaurus-becks/gokrb5/crypto/rfc3961
-github.com/tyrannosaurus-becks/gokrb5/crypto/rfc3962
-github.com/tyrannosaurus-becks/gokrb5/crypto/rfc4757
-github.com/tyrannosaurus-becks/gokrb5/crypto/rfc8009
 github.com/tyrannosaurus-becks/gokrb5/iana
 github.com/tyrannosaurus-becks/gokrb5/iana/adtype
 github.com/tyrannosaurus-becks/gokrb5/iana/asnAppTag
 github.com/tyrannosaurus-becks/gokrb5/pac
 github.com/tyrannosaurus-becks/gokrb5/iana/addrtype
+github.com/tyrannosaurus-becks/gokrb5/crypto/common
+github.com/tyrannosaurus-becks/gokrb5/crypto/rfc3961
+github.com/tyrannosaurus-becks/gokrb5/crypto/rfc3962
+github.com/tyrannosaurus-becks/gokrb5/crypto/rfc4757
+github.com/tyrannosaurus-becks/gokrb5/crypto/rfc8009
 # github.com/ugorji/go/codec v0.0.0-20190204201341-e444a5086c43
 github.com/ugorji/go/codec
 # github.com/ulikunitz/xz v0.5.6
