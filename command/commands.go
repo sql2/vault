@@ -173,11 +173,11 @@ func initCommands(ui, serverCmdUi cli.Ui, runOpts *RunOptions) {
 		// Also need to release the Kerb plugin and mark as supportable
 		// after security tests look ok.
 		//"kerberos":
-		"ldap":     &credLdap.CLIHandler{},
-		"oci":      &credOCI.CLIHandler{},
-		"oidc":     &credOIDC.CLIHandler{},
-		"okta":     &credOkta.CLIHandler{},
-		"pcf":      &credCF.CLIHandler{}, // Deprecated.
+		"ldap": &credLdap.CLIHandler{},
+		"oci":  &credOCI.CLIHandler{},
+		"oidc": &credOIDC.CLIHandler{},
+		"okta": &credOkta.CLIHandler{},
+		"pcf":  &credCF.CLIHandler{}, // Deprecated.
 		"radius": &credUserpass.CLIHandler{
 			DefaultMount: "radius",
 		},
