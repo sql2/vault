@@ -128,7 +128,7 @@ layers:
   - name: base
     source-include: ""
     source-exclude: ""
-    dockerfile: |
+    dockerfile: |-
       FROM debian:buster
       RUN apt-get update -y && apt-get install --no-install-recommends -y -q \
                                curl \
@@ -189,28 +189,28 @@ layers:
   - name: yarn
     source-include: ui/package.json ui/yarn.lock
     source-exclude: ""
-    dockerfile: |
+    dockerfile: |-
+      # Parent layer checksum: {{env.Getenv "BASE_LAYER_CHECKSUM"}}
       ARG BASE_IMAGE
       FROM $BASE_IMAGE
-      # Base layer checksum: {{env.Getenv "BASE_LAYER_CHECKSUM"}}
       COPY . ./
       RUN cd ui && yarn install
       RUN cd ui && npm rebuild node-sass
   - name: ui
     source-include: ui/
     source-exclude: ""
-    dockerfile: |
+    dockerfile: |-
+      # Parent layer checksum: {{env.Getenv "BASE_LAYER_CHECKSUM"}}
       ARG BASE_IMAGE
       FROM $BASE_IMAGE
-      # Base layer checksum: {{env.Getenv "BASE_LAYER_CHECKSUM"}}
       COPY . ./
       RUN cd ui && yarn run build
   - name: static
     source-include: .
     source-exclude: .circleci/ release/
-    dockerfile: |
+    dockerfile: |-
+      # Parent layer checksum: {{env.Getenv "BASE_LAYER_CHECKSUM"}}
       ARG BASE_IMAGE
       FROM $BASE_IMAGE
-      # Base layer checksum: {{env.Getenv "BASE_LAYER_CHECKSUM"}}
       COPY . ./
       RUN make static-assets
