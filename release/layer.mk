@@ -100,7 +100,7 @@ LAYERS += $(1)
 $(1)_NAME           = $(1)
 $(1)_BASE           = $(2)
 $(1)_SOURCE_INCLUDE = $(3)
-$(1)_SOURCE_EXCLUDE = $(4)
+$(1)_SOURCE_EXCLUDE = $(4) $(ALWAYS_EXCLUDE_SOURCE)
 
 $(1)_CURRENT_LINK = $(CACHE_ROOT)/$$($(1)_NAME)/current
 $(1)_CACHE = $(CACHE_ROOT)/$$($(1)_NAME)/$$($(1)_SOURCE_ID)

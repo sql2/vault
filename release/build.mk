@@ -2,43 +2,48 @@
 #
 # build.mk builds the packages defined in packages.lock, first building all necessary
 # builder images.
+#
+# NOTE: This file should always run as though it were in the repo root, so all paths
+# are relative to the repo root.
 
 SHELL := /usr/bin/env bash -euo pipefail -c
 
 THIS_FILE := $(lastword $(MAKEFILE_LIST))
 THIS_DIR := $(shell dirname $(THIS_FILE))
 
-DOCKERFILES_DIR := $(THIS_DIR)/layers.lock
-include $(THIS_DIR)/layer.mk
+# ALWAYS_EXCLUDE_SOURCE prevents source from these directories from taking
+# part in the SOURCE_ID, or from being sent to the builder image layers.
+# This is important for allowing the head of master to build other commits
+# where this build system has not been vendored.
+#
+# Source in release/ is encoded as PACKAGE_SPEC_ID and included in paths
+# and cache keys. Source in .circleci/ should not do much more than call
+# code in the release/ directory.
+ALWAYS_EXCLUDE_SOURCE     := release/ .circleci/
+# ALWAYS_EXCLUD_SOURCE_GIT is git path filter parlance for the above.
+ALWAYS_EXCLUDE_SOURCE_GIT := ':(exclude)release/' ':(exclude).circleci/'
 
+# Even though layers may have different Git revisions, we always want to
+# honour either HEAD or the specified PRODUCT_REVISION for compiling the
+# final binaries, as this revision is the one picked by a human to form
+# the release.
 ifeq ($(PRODUCT_REVISION),)
 GIT_REF := HEAD
 ALLOW_DIRTY ?= YES
-DIRTY := $(shell git diff --exit code > /dev/null 2>&1 || echo "dirty_")
-PACKAGE_SOURCE_ID := $(DIRTY)$(shell git rev-parse $(PRODUCT_REVISION))
+DIRTY := $(shell git diff --exit-code $(GIT_REF) -- $(ALWAYS_EXCLUDE_SOURCE_GIT) > /dev/null 2>&1 || echo "dirty_")
+PACKAGE_SOURCE_ID := $(DIRTY)$(shell git rev-parse $(GIT_REF))
 else
 GIT_REF := $(PRODUCT_REVISION)
 ALLOW_DIRTY := NO
-PACKAGE_SOURCE_ID := $(shell git rev-parse $(PRODUCT_REVISION))
+PACKAGE_SOURCE_ID := $(shell git rev-parse $(GIT_REF))
 endif
 
+DOCKERFILES_DIR := $(THIS_DIR)/layers.lock
 
-### BUILDER_IMAGE_LAYERS
+# Include the layers driver.
+include $(THIS_DIR)/layer.mk
 
-# Each grouping below defines a layer of the builder image.
-# Each definition includes:
-#
-#   1. The name of the image layer to build (each has a corresponding file in
-#      build/<name>.Dockerfile) (required)
-#   2. The name of the base image layer (defined in another grouping)
-#      if this is left blank, then we just rely on the Dockerfile FROM line.
-#   3. Source include: a list of files and directories to consider the source
-#      for this layer. Keep this list minimal in order to benefit from caching.
-#      Each layer includes own Dockerfile by default. (required)
-#   4. Source exclude: a list of files and directories to exclude.
-#      This filter is applied after source include, so you can e.g. include .
-#      and then just filter our the stuff you do not want.
-
+# Include the generated instructions to build each layer.
 include $(shell find release/layers.lock -name '*.mk')
 
 write-cache-keys: $(addsuffix -write-cache-key,$(LAYERS))
@@ -97,7 +102,7 @@ LDFLAGS += -X github.com/hashicorp/vault/sdk/version.Version="$(PRODUCT_VERSION_
 LDFLAGS += -X github.com/hashicorp/vault/sdk/version.VersionPrerelease="$(PRODUCT_VERSION_PRE)"
 
 # OUT_DIR tells the Go toolchain where to place the binary.
-OUT_DIR := $(PACKAGE_OUT_ROOT)/$(PACKAGE_NAME)/$(static_SOURCE_ID)
+OUT_DIR := $(PACKAGE_OUT_ROOT)/$(PACKAGE_NAME)/$(PACKAGE_SOURCE_ID)/$(PACKAGE_SPEC_ID)
 
 # GO_BUILD_VARS are environment variables affecting the go build
 # command that will be passed through to the go build command inside the
