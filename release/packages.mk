@@ -219,7 +219,7 @@ BUILD_COMMAND := make -C ../ -f release/build.mk build
 # be invoked to produce a certain package.
 $(COMMANDS_DIR)/%.sh: $(PACKAGES_WITH_CHECKSUMS_DIR)/%.json
 	@{ echo "# Build package: $$(jq -r '.PACKAGE_NAME' < $<)"; } > $@ 
-	@{ jq 'to_entries | .[] | "\(.key)=\(.value)"' < $<; echo "$(BUILD_COMMAND)"; } | xargs >> $@
+	@{ jq "to_entries | .[] | \"\(.key)='\(.value)'\"" < $<; echo "$(BUILD_COMMAND)"; } | xargs >> $@
 
 # LIST just plonks all the package json files generated above into an array,
 # and converts it to YAML.
