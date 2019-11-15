@@ -4,6 +4,10 @@
 # by expanding its packages using all defaults and templates.
 # It also generates the layered Dockerfiles for each package.
 
+# Disable built-in rules.
+MAKEFLAGS += --no-builtin-rules
+.SUFFIXES:
+
 SHELL := /usr/bin/env bash -euo pipefail -c
 
 THIS_FILE := $(lastword $(MAKEFILE_LIST))
@@ -21,7 +25,7 @@ DEFAULTS_DIR := .tmp/defaults
 RENDERED_DIR := .tmp/rendered
 PACKAGES_DIR := .tmp/packages
 COMMANDS_DIR := .tmp/commands
-RENDERED_LAYERS_DIR := .tmp/rendered-layers
+DOCKERFILES_DIR := .tmp/dockerfiles
 DEFAULTS_WITH_ENV := .tmp/defaults-with-env.json
 LIST := .tmp/list.yml
 
@@ -38,7 +42,7 @@ $(shell mkdir -p \
 	$(RENDERED_DIR) \
 	$(PACKAGES_DIR) \
 	$(COMMANDS_DIR) \
-	$(RENDERED_LAYERS_DIR) \
+	$(DOCKERFILES_DIR) \
 )
 
 # PKG_INDEXES is just the numbers 1..PKG_COUNT, we use this to generate filenames
@@ -46,7 +50,6 @@ $(shell mkdir -p \
 PKG_INDEXES := $(shell seq $(PKG_COUNT))
 DEFAULTS := $(addprefix $(DEFAULTS_DIR)/,$(addsuffix .json,$(PKG_INDEXES)))
 RENDERED := $(addprefix $(RENDERED_DIR)/,$(addsuffix .json,$(PKG_INDEXES)))
-RENDERED_LAYERS := $(addprefix $(RENDERED_LAYERS_DIR)/,$(addsuffix .yml,$(PKG_INDEXES)))
 PACKAGES := $(addprefix $(PACKAGES_DIR)/,$(addsuffix .json,$(PKG_INDEXES)))
 COMMANDS := $(addprefix $(COMMANDS_DIR)/,$(addsuffix .sh,$(PKG_INDEXES)))
 
@@ -55,6 +58,10 @@ TEMPLATES := $(addprefix $(TEMPLATE_DIR)/,$(TEMPLATE_NAMES))
 
 LAYER_NAMES := $(shell yq -r '.layers[] | .name' < $(SPEC))
 LAYER_TEMPLATES := $(addprefix $(LAYER_TEMPLATE_DIR)/,$(LAYER_NAMES))
+
+# DOCKERFILES is actually a directory for each package, containing a Dockerfile
+# for each layer in that package's configuration.
+DOCKERFILES := $(addprefix $(DOCKERFILES_DIR)/,$(PKG_INDEXES))
 
 ## PHONY targets for human use.
 
@@ -67,9 +74,13 @@ list: $(LIST)
 lock: $(LOCK)
 	@echo "$< updated."
 
+# commands builds a list of build commands, one for each package.
 commands: $(COMMANDS)
 	@cat $^ > .tmp/all-commands.sh
 	@echo "see .tmp/all-commands.sh"
+
+dockerfiles: $(DOCKERFILES)
+	@echo Dockerfiles updated.
 
 # Other phony targets below are for debugging purposes, allowing you
 # to run just part of the pipeline.
@@ -79,9 +90,6 @@ packages: $(PACKAGES)
 rendered: $(RENDERED)
 	@cat $^
 	
-rendered-layers: $(RENDERED_LAYERS)
-	@cat $^
-
 defaults-with-env: $(DEFAULTS_WITH_ENV)
 	@cat $<
 
@@ -170,10 +178,11 @@ $(LOCK): $(LIST)
 	@echo "### ***" >> $@
 	@cat $< >> $@
 
-$(RENDERED_LAYERS_DIR)/%.yml: $(PACKAGES_DIR)/%.json $(LAYER_TEMPLATES)
-	@OUT=$@; rm -f $$OUT; \
-	find $(LAYER_TEMPLATE_DIR) -mindepth 1 -maxdepth 1 | while read -r T; do \
-	  TNAME=$$(basename $$T); \
-	  echo "$$TNAME: |" >> $$OUT; \
-	  gomplate -f $$T -d vars=$< | sed 's/^/  /g' >> $$OUT; \
-	done;
+$(DOCKERFILES_DIR)/%: $(PACKAGES_DIR)/%.json $(LAYER_TEMPLATES)
+	@rm -rf $@; mkdir -p $@
+	@export BASE_LAYER_CHECKSUM="none"; \
+	for NAME in $(LAYER_NAMES); do \
+		DF=$@/$$NAME.Dockerfile; \
+		T=$(LAYER_TEMPLATE_DIR)/$$NAME; \
+		gomplate -f $$T -d vars=$< > $$DF; \
+		BASE_LAYER_CHECKSUM=$$(sha256sum < $$DF | cut -d' ' -f1); done

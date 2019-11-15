@@ -172,10 +172,27 @@ layers:
 
       WORKDIR $DIR
 
+  # Because each layer is a small, separate Dockerfile, rather than a cumulative
+  # Dockerfile, we add a comment to each one, containing the checksum of the
+  # underlying one. This ensures that any changes to underlying Dockerfiles will
+  # result in new subsequent Dockerfilees. This is important because when
+  # calculating the source ID, we must also take into consideration the source
+  # of the Docker container we are building in. By having the checksums flow
+  # through the source, we are able to just take just the last layer's
+  # Dockerfile into consideration, rather than all of them.
+  # The comments look like this:
+  #
+  #     # Base layer checksum: {{env.Getenv "BASE_LAYER_CHECKSUM"}}
+  #
+  # Note that the source ID of the _images_ built using these Dockerfiles
+  # is additionally dictated by the source included in that layer.
   - name: yarn
     source-include: ui/package.json ui/yarn.lock
     source-exclude: ""
     dockerfile: |
+      ARG BASE_IMAGE
+      FROM $BASE_IMAGE
+      # Base layer checksum: {{env.Getenv "BASE_LAYER_CHECKSUM"}}
       COPY . ./
       RUN cd ui && yarn install
       RUN cd ui && npm rebuild node-sass
@@ -183,11 +200,17 @@ layers:
     source-include: ui/
     source-exclude: ""
     dockerfile: |
-      COPY ui ./ui
+      ARG BASE_IMAGE
+      FROM $BASE_IMAGE
+      # Base layer checksum: {{env.Getenv "BASE_LAYER_CHECKSUM"}}
+      COPY . ./
       RUN cd ui && yarn run build
   - name: static
     source-include: .
     source-exclude: .circleci/ release/
     dockerfile: |
+      ARG BASE_IMAGE
+      FROM $BASE_IMAGE
+      # Base layer checksum: {{env.Getenv "BASE_LAYER_CHECKSUM"}}
       COPY . ./
       RUN make static-assets
