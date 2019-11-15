@@ -163,6 +163,7 @@ $(1)_PHONY_TARGETS := $$(addprefix $$($(1)_NAME)-,$$($(1)_PHONY_TARGET_NAMES))
 
 # File targets.
 $(1)_IMAGE             := $$($(1)_CACHE)/image.marker
+$(1)_LAYER_REFS        := $$($(1)_CACHE)/image.layer_refs
 $(1)_IMAGE_TIMESTAMP   := $$($(1)_CACHE)/image.created_time
 $(1)_IMAGE_ARCHIVE     := $$($(1)_CACHE)/image.tar.gz
 $(1)_SOURCE_ARCHIVE    := $$($(1)_CACHE)/source.tar.gz
@@ -176,8 +177,11 @@ $(1)_TARGETS = $$($(1)_PHONY_TARGETS)
 # UPDATE_MARKER_FILE ensures the image marker file has the same timestamp as the
 # docker image creation date it represents. This enables make to only rebuild it when
 # it has really changed, especially after loading the image from an archive.
+# It also writes a list of all the layers in this docker image's history, for use
+# when saving layers out to archives for use in pre-populating Docker build caches.
 define $(1)_UPDATE_MARKER_FILE
 	export MARKER=$$($(1)_IMAGE); \
+	export LAYER_REFS=$$($(1)_LAYER_REFS); \
 	export IMAGE=$$($(1)_IMAGE_NAME); \
 	export IMAGE_CREATED; \
 	if ! IMAGE_CREATED=$$$$(docker inspect -f '{{.Created}}' $$$$IMAGE 2>/dev/null); then \
@@ -191,7 +195,9 @@ define $(1)_UPDATE_MARKER_FILE
 		echo "==> Writing marker file for $$$$IMAGE (created $$$$IMAGE_CREATED)"; \
 	fi; \
 	echo $$$$IMAGE > $$$$MARKER; \
-	$(TOUCH) -m -d $$$$IMAGE_CREATED $$$$MARKER;
+	$(TOUCH) -m -d $$$$IMAGE_CREATED $$$$MARKER; \
+	echo "$$$$IMAGE" > $$$$LAYER_REFS; \
+	docker history --no-trunc -q $$$$IMAGE | grep -Fv '<missing>' >> $$$$LAYER_REFS; 
 endef
 
 ## PHONY targets
@@ -228,6 +234,9 @@ $(1)-write-cache-key:
 
 
 $(1)-image: $$($(1)_IMAGE_LINK)
+	@cat $$<
+
+$(1)-layer-refs: $$($(1)_LAYER_REFS)
 	@cat $$<
 
 $(1)-save: $$($(1)_IMAGE_ARCHIVE)
@@ -272,6 +281,10 @@ $$($(1)_IMAGE_ARCHIVE): | $$($(1)_IMAGE)
 		docker save $$$$IMAGE \
 			$$$$(docker history -q --no-trunc $$$$IMAGE | grep -v missing) \
 			| gzip > $$@
+
+$$($(1)_LAYER_REFS):
+	@echo "$$($(1)_IMAGE_NAME)" > $$@
+	@docker history --no-trunc -q $$($(1)_IMAGE_NAME) | grep -Fv '<missing>' >> $$@
 
 endef
 

@@ -46,8 +46,19 @@ include $(THIS_DIR)/layer.mk
 # Include the generated instructions to build each layer.
 include $(shell find release/layers.lock -name '*.mk')
 
+UPDATE_MARKERS_OUTPUT := $(foreach L,$(LAYERS),$(shell $(call $(L)_UPDATE_MARKER_FILE)))
+ifneq ($(UPDATE_MARKERS_OUTPUT),)
+$(info $(UPDATE_MARKERS_OUTPUT))
+endif
+
 write-cache-keys: $(addsuffix -write-cache-key,$(LAYERS))
 	@echo "==> All cache keys written."
+
+build-all-layers: $(addsuffix -image,$(LAYERS))
+	@echo "==> All builder layers built."
+
+save-all-layers: $(addsuffix -layer-refs,$(LAYERS))
+	@echo $^
 
 .PHONY: debug
 debug: $(addsuffix -debug,$(LAYERS))
