@@ -142,7 +142,7 @@ BUILD_CONTAINER_NAME := build-$(PACKAGE_NAME)
 DOCKER_RUN_FLAGS := --name $(BUILD_CONTAINER_NAME)
 # DOCKER_RUN_COMMAND ties everything together to build the final package as a
 # single docker run invocation.
-DOCKER_RUN_COMMAND = docker run $(DOCKER_RUN_FLAGS) $(static_7e16e7cb2b063e5aa8a9127c279deacef009efca50ad10793ae43701a17a0b1c_IMAGE_NAME) $(DOCKER_SHELL) "$(BUILD_COMMAND) && $(ARCHIVE_COMMAND)"
+DOCKER_RUN_COMMAND = docker run $(DOCKER_RUN_FLAGS) $(BUILD_LAYER_IMAGE_NAME) $(DOCKER_SHELL) "$(BUILD_COMMAND) && $(ARCHIVE_COMMAND)"
 DOCKER_CP_COMMAND = docker cp $(BUILD_CONTAINER_NAME):/$(PACKAGE_PATH) $(PACKAGE_PATH)
 
 .PHONY: build
@@ -157,7 +157,7 @@ $(PACKAGE):
 	@# here. This allows us to skip checking the whole dependency tree, which means
 	@# we can buiild the package with just the static image, not relying on any of
 	@# the other base images to be present.
-	@if [ ! -f $(static_7e16e7cb2b063e5aa8a9127c279deacef009efca50ad10793ae43701a17a0b1c_IMAGE) ]; then $(MAKE) -f $(THIS_FILE) $(static_7e16e7cb2b063e5aa8a9127c279deacef009efca50ad10793ae43701a17a0b1c_IMAGE); fi
+	@if [ ! -f $(BUILD_LAYER_IMAGE) ]; then $(MAKE) -f $(THIS_FILE) $(BUILD_LAYER_IMAGE); fi
 	@mkdir -p $$(dirname $@)
 	@echo "==> Building package: $@"
 	@rm -rf ./$(OUT_DIR)

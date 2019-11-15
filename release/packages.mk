@@ -191,15 +191,20 @@ $(DOCKERFILES_DIR)/%: $(PACKAGES_DIR)/%.json $(LAYER_TEMPLATES)
 		echo "Comment: Set BASE_LAYER_CHECKSUM and ID ready for the next layer." > /dev/null; \
 		BASE_LAYER_CHECKSUM=$$LAYER_CHECKSUM; \
 		BASE_LAYER_ID=$$LAYER_ID; \
-	done
+	done; \
+	echo "BUILD_LAYER_IMAGE = \$$($${LAYER_ID}_IMAGE)" >> $$MKFILE; \
+	echo "BUILD_LAYER_IMAGE_NAME = \$$($${LAYER_ID}_IMAGE_NAME)" >> $$MKFILE; \
+	# ^ for the last layer (the one that builds packages), specify BUILD_LAYER_IMAGE to point to it.
 
 $(PACKAGES_WITH_CHECKSUMS_DIR)/%.json: $(PACKAGES_DIR)/%.json $(DOCKERFILES_DIR)/%
 	@# Add references to the layer Dockerfiles.
 	@# Add the package spec ID.
 	@cp $< $@
-	@for NAME in $(LAYER_NAMES); do \
-		echo "LAYER_CHECKSUM_$$NAME: $$(cat $(DOCKERFILES_DIR)/$*/$$NAME.Dockerfile.checksum)" >> $@; \
-	done
+	@# TODO factor out this loop which just grabs the last layer name.
+	@i=0; for NAME in $(LAYER_NAMES); do \
+		((i++)); \
+	done; \
+	echo "BUILDER_LAYER_ID: $${NAME}_$$(cat $(DOCKERFILES_DIR)/$*/$$NAME.Dockerfile.checksum)" >> $@
 	@echo "PACKAGE_SPEC_ID: $$(sha256sum < $@ | cut -d' ' -f1)" >> $@
 	@yq . < $@ | sponge $@
 
