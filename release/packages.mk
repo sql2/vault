@@ -197,20 +197,15 @@ $(PACKAGES_WITH_CHECKSUMS_DIR)/%.json: $(PACKAGES_DIR)/%.json $(DOCKERFILES_DIR)
 	@# Add references to the layer Dockerfiles.
 	@# Add the package spec ID.
 	@cp $< $@
-	@echo "LAYER_CHECKSUMS:" >> $@
 	@for NAME in $(LAYER_NAMES); do \
-		{ echo "  - $$(cat $(DOCKERFILES_DIR)/$*/$$NAME.Dockerfile.checksum)"; } >> $@; \
+		echo "LAYER_CHECKSUM_$$NAME: $$(cat $(DOCKERFILES_DIR)/$*/$$NAME.Dockerfile.checksum)" >> $@; \
 	done
 	@echo "PACKAGE_SPEC_ID: $$(sha256sum < $@ | cut -d' ' -f1)" >> $@
 	@yq . < $@ | sponge $@
 
-layers.lock/Makefile:
-	for NAME in $(LAYER_NAMES); do
-		for
-
 # COMMANDS files are created by this rule. They are one-line shell scripts that can
 # be invoked to produce a certain package.
-$(COMMANDS_DIR)/%.sh: $(PACKAGES_DIR)/%.json
+$(COMMANDS_DIR)/%.sh: $(PACKAGES_WITH_CHECKSUMS_DIR)/%.json
 	@{ echo "# Build package: $$(jq -r '.PACKAGE_NAME' < $<)"; } > $@ 
 	@{ jq 'to_entries | .[] | "\(.key)=\(.value)"' < $<; echo "make build"; } | xargs >> $@
 

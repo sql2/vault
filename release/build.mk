@@ -35,31 +35,6 @@ write-cache-keys: $(addsuffix -write-cache-key,$(LAYERS))
 .PHONY: debug
 debug: $(addsuffix -debug,$(LAYERS))
 
-### BEGIN Pre-processing to ensure marker files aren't lying.
-
-base_UPDATED   := $(strip $(shell $(call base_UPDATE_MARKER_FILE)))
-yarn_UPDATED   := $(strip $(shell $(call yarn_UPDATE_MARKER_FILE)))
-ui_UPDATED     := $(strip $(shell $(call ui_UPDATE_MARKER_FILE)))
-static_UPDATED := $(strip $(shell $(call static_UPDATE_MARKER_FILE)))
-
-ifneq ($(base_UPDATED),)
-$(info $(base_UPDATED))
-endif
-
-ifneq ($(yarn_UPDATED),)
-$(info $(yarn_UPDATED))
-endif
-
-ifneq ($(ui_UPDATED),)
-$(info $(ui_UPDATED))
-endif
-
-ifneq ($(static_UPDATED),)
-$(info $(static_UPDATED))
-endif
-
-### END pre-processing.
-
 ### BEGIN Package building rules.
 ###
 ### This section dictates how we invoke the builder conainer to build the output package.
