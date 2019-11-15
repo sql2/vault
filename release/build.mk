@@ -1,7 +1,7 @@
 # build.mk
 #
-# build.mk defines the builder image layers, as well as the final build instructions we pass to
-# the final layer (static) to produce the various packages.
+# build.mk builds the packages defined in packages.lock, first building all necessary
+# builder images.
 
 SHELL := /usr/bin/env bash -euo pipefail -c
 
@@ -29,51 +29,11 @@ include $(THIS_DIR)/layer.mk
 
 include $(shell find release/layers.lock -name '*.mk')
 
-## The base image contains base dependencies like libraries and tools.
-#BASE_NAME           := base
-#BASE_BASEIMAGE      :=
-#BASE_SOURCE_INCLUDE :=
-#BASE_SOURCE_EXCLUDE := 
-#$(eval $(call LAYER,$(BASE_NAME),$(BASE_BASEIMAGE),$(BASE_SOURCE_INCLUDE),$(BASE_SOURCE_EXCLUDE)))
-#
-## The yarn image contains all the UI dependencies for the ui layer.
-#YARN_NAME           := yarn
-#YARN_BASEIMAGE      := base
-#YARN_SOURCE_INCLUDE := ui/yarn.lock ui/package.json
-#YARN_SOURCE_EXCLUDE :=
-#$(eval $(call LAYER,$(YARN_NAME),$(YARN_BASEIMAGE),$(YARN_SOURCE_INCLUDE),$(YARN_SOURCE_EXCLUDE)))
-#
-## The ui image contains the compiled ui code in ui/
-#UI_NAME           := ui
-#UI_BASEIMAGE      := yarn
-#UI_SOURCE_INCLUDE := ui/
-#UI_SOURCE_EXCLUDE :=
-#$(eval $(call LAYER,$(UI_NAME),$(UI_BASEIMAGE),$(UI_SOURCE_INCLUDE),$(UI_SOURCE_EXCLUDE)))
-#
-## The static image is the one we finally use for compilation of the source.
-#STATIC_NAME           := static
-#STATIC_BASEIMAGE      := ui
-#STATIC_SOURCE_INCLUDE := .
-#STATIC_SOURCE_EXCLUDE := release/ .circleci/
-#$(eval $(call LAYER,$(STATIC_NAME),$(STATIC_BASEIMAGE),$(STATIC_SOURCE_INCLUDE),$(STATIC_SOURCE_EXCLUDE)))
-
 write-cache-keys: $(addsuffix -write-cache-key,$(LAYERS))
 	@echo "==> All cache keys written."
 
 .PHONY: debug
-debug:
-	@echo "base_SOURCE_COMMIT       = $(base_SOURCE_COMMIT)"
-	@echo "base_SOURCE_ID           = $(base_SOURCE_ID)"
-	@echo "base_SOURCE_GIT          = $(base_SOURCE_GIT)"
-	@echo "yarn_SOURCE_COMMIT       = $(yarn_SOURCE_COMMIT)"
-	@echo "yarn_SOURCE_ID           = $(yarn_SOURCE_ID)"
-	@echo "yarn_SOURCE_GIT          = $(yarn_SOURCE_GIT)"
-	@echo "ui_SOURCE_COMMIT         = $(ui_SOURCE_COMMIT)"
-	@echo "ui_SOURCE_ID             = $(ui_SOURCE_ID)"
-	@echo "ui_SOURCE_GIT            = $(ui_SOURCE_GIT)"
-	@echo "static_SOURCE_COMMIT     = $(static_SOURCE_COMMIT)"
-	@echo "static_SOURCE_ID         = $(static_SOURCE_ID)"
-	@echo "static_SOURCE_GIT        = $(static_SOURCE_GIT)"
+debug: $(addsuffix -debug,$(LAYERS))
 
 ### BEGIN Pre-processing to ensure marker files aren't lying.
 

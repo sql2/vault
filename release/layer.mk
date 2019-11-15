@@ -109,7 +109,6 @@ $(1)_DOCKERFILE = $(DOCKERFILES_DIR)/$$($(1)_NAME).Dockerfile
 $(1)_IMAGE_NAME = vault-builder-$$($(1)_NAME):$$($(1)_SOURCE_ID)
 $(1)_SOURCE_GIT = $$($(1)_SOURCE_INCLUDE) $$($(1)_DOCKERFILE) $$(call QUOTE_LIST,$$(addprefix $(GIT_EXCLUDE_PREFIX),$$($(1)_SOURCE_EXCLUDE)))
 $(1)_SOURCE_CMD = { \
-					  echo $$($(1)_DOCKERFILE); \
 					  git ls-files HEAD -- $$($(1)_SOURCE_GIT); \
 			 		  git ls-files -m --exclude-standard HEAD -- $$($(1)_SOURCE_GIT); \
 			 	  } | sort | uniq
