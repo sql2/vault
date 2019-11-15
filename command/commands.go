@@ -169,6 +169,10 @@ func initCommands(ui, serverCmdUi cli.Ui, runOpts *RunOptions) {
 		"cf":       &credCF.CLIHandler{},
 		"gcp":      &credGcp.CLIHandler{},
 		"github":   &credGitHub.CLIHandler{},
+		// TODO need to make it into a CLI Handler object.
+		// Also need to release the Kerb plugin and mark as supportable
+		// after security tests look ok.
+		//"kerberos":
 		"ldap":     &credLdap.CLIHandler{},
 		"oci":      &credOCI.CLIHandler{},
 		"oidc":     &credOIDC.CLIHandler{},
