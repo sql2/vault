@@ -8,6 +8,8 @@
 
 SHELL := /usr/bin/env bash -euo pipefail -c
 
+CACHE_ROOT := .buildcache
+
 THIS_FILE := $(lastword $(MAKEFILE_LIST))
 THIS_DIR := $(shell dirname $(THIS_FILE))
 
@@ -22,6 +24,13 @@ THIS_DIR := $(shell dirname $(THIS_FILE))
 ALWAYS_EXCLUDE_SOURCE     := release/ .circleci/
 # ALWAYS_EXCLUD_SOURCE_GIT is git path filter parlance for the above.
 ALWAYS_EXCLUDE_SOURCE_GIT := ':(exclude)release/' ':(exclude).circleci/'
+
+# DOCKER_LAYER_LIST is used to dump the name of every docker ref in use
+# by all of the current builder images. By running 'docker save' against
+# this list, we end up with a tarball that can pre-populate the docker
+# cache to avoid unnecessary rebuilds.
+DOCKER_LAYER_LIST := $(CACHE_ROOT)/docker-layer-list
+DOCKER_BUILDER_CACHE := $(CACHE_ROOT)/docker-builder-cache.tar.gz
 
 # Even though layers may have different Git revisions, we always want to
 # honour either HEAD or the specified PRODUCT_REVISION for compiling the
@@ -46,7 +55,7 @@ include $(THIS_DIR)/layer.mk
 # Include the generated instructions to build each layer.
 include $(shell find release/layers.lock -name '*.mk')
 
-UPDATE_MARKERS_OUTPUT := $(foreach L,$(LAYERS),$(shell $(call $(L)_UPDATE_MARKER_FILE)))
+UPDATE_MARKERS_OUTPUT := $(strip $(foreach L,$(LAYERS),$(shell $(call $(L)_UPDATE_MARKER_FILE))))
 ifneq ($(UPDATE_MARKERS_OUTPUT),)
 $(info $(UPDATE_MARKERS_OUTPUT))
 endif
@@ -57,8 +66,15 @@ write-cache-keys: $(addsuffix -write-cache-key,$(LAYERS))
 build-all-layers: $(addsuffix -image,$(LAYERS))
 	@echo "==> All builder layers built."
 
-save-all-layers: $(addsuffix -layer-refs,$(LAYERS))
-	@echo $^
+save-all-layers: $(DOCKER_BUILDER_CACHE)
+	@ls -lh $<
+	
+	# TODO: Now we have saved the builder cache, we need to write a cache
+	# key in the correct order to ensure CircleCI's prefix match is efficient.
+
+$(DOCKER_BUILDER_CACHE): $(addsuffix -layer-refs,$(LAYERS))
+	@cat $(addsuffix /image.layer_refs,$(LAYER_CACHES)) | sort | uniq > $(DOCKER_LAYER_LIST)
+	@cat $(DOCKER_LAYER_LIST) | xargs docker save | gzip > $(DOCKER_BUILDER_CACHE)
 
 .PHONY: debug
 debug: $(addsuffix -debug,$(LAYERS))

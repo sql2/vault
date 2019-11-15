@@ -61,10 +61,6 @@
 
 SHELL := /usr/bin/env bash -euo pipefail -c
 
-### Base configuration
-CACHE_ROOT := .buildcache
-### End base configuration
-
 ### Utilities and constants
 GIT_EXCLUDE_PREFIX := :(exclude)
 # SUM generates the sha1sum of its input.
@@ -104,6 +100,9 @@ $(1)_SOURCE_EXCLUDE = $(4) $(ALWAYS_EXCLUDE_SOURCE)
 
 $(1)_CURRENT_LINK = $(CACHE_ROOT)/$$($(1)_NAME)/current
 $(1)_CACHE = $(CACHE_ROOT)/$$($(1)_NAME)/$$($(1)_SOURCE_ID)
+
+LAYER_CACHES += $$($(1)_CACHE)
+
 $(1)_SOURCE_LIST = $$($(1)_CACHE)/source.list
 $(1)_DOCKERFILE = $(DOCKERFILES_DIR)/$$($(1)_NAME).Dockerfile
 $(1)_IMAGE_NAME = vault-builder-$$($(1)_NAME):$$($(1)_SOURCE_ID)
@@ -237,7 +236,7 @@ $(1)-image: $$($(1)_IMAGE_LINK)
 	@cat $$<
 
 $(1)-layer-refs: $$($(1)_LAYER_REFS)
-	@cat $$<
+	@echo $$<
 
 $(1)-save: $$($(1)_IMAGE_ARCHIVE)
 	@echo $$<

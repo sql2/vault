@@ -20,6 +20,10 @@ build: .tmp/default-package-index commands
 	@cat .tmp/commands/$$(cat $<).sh
 	@$(SHELL) "$$(cat .tmp/commands/$$(cat $<).sh)"
 
+save-builder-cache:
+	@echo "==> Exporting Docker build cache"
+	@$(MAKE) -C ../ -f release/build.mk save-all-layers
+
 build-all: commands
 	cd ../ && $(SHELL) "$$(cat release/.tmp/all-commands.sh)"
 
