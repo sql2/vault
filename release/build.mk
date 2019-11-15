@@ -8,7 +8,7 @@ SHELL := /usr/bin/env bash -euo pipefail -c
 THIS_FILE := $(lastword $(MAKEFILE_LIST))
 THIS_DIR := $(shell dirname $(THIS_FILE))
 
-DOCKERFILES_DIR := $(THIS_DIR)/.tmp/layers
+DOCKERFILES_DIR := $(THIS_DIR)/layers.lock
 include $(THIS_DIR)/layer.mk
 
 ### BUILDER_IMAGE_LAYERS
@@ -27,33 +27,35 @@ include $(THIS_DIR)/layer.mk
 #      This filter is applied after source include, so you can e.g. include .
 #      and then just filter our the stuff you do not want.
 
-# The base image contains base dependencies like libraries and tools.
-BASE_NAME           := base
-BASE_BASEIMAGE      :=
-BASE_SOURCE_INCLUDE :=
-BASE_SOURCE_EXCLUDE := 
-$(eval $(call LAYER,$(BASE_NAME),$(BASE_BASEIMAGE),$(BASE_SOURCE_INCLUDE),$(BASE_SOURCE_EXCLUDE)))
+include $(shell find release/layers.lock -name '*.mk')
 
-# The yarn image contains all the UI dependencies for the ui layer.
-YARN_NAME           := yarn
-YARN_BASEIMAGE      := base
-YARN_SOURCE_INCLUDE := ui/yarn.lock ui/package.json
-YARN_SOURCE_EXCLUDE :=
-$(eval $(call LAYER,$(YARN_NAME),$(YARN_BASEIMAGE),$(YARN_SOURCE_INCLUDE),$(YARN_SOURCE_EXCLUDE)))
-
-# The ui image contains the compiled ui code in ui/
-UI_NAME           := ui
-UI_BASEIMAGE      := yarn
-UI_SOURCE_INCLUDE := ui/
-UI_SOURCE_EXCLUDE :=
-$(eval $(call LAYER,$(UI_NAME),$(UI_BASEIMAGE),$(UI_SOURCE_INCLUDE),$(UI_SOURCE_EXCLUDE)))
-
-# The static image is the one we finally use for compilation of the source.
-STATIC_NAME           := static
-STATIC_BASEIMAGE      := ui
-STATIC_SOURCE_INCLUDE := .
-STATIC_SOURCE_EXCLUDE := release/ .circleci/
-$(eval $(call LAYER,$(STATIC_NAME),$(STATIC_BASEIMAGE),$(STATIC_SOURCE_INCLUDE),$(STATIC_SOURCE_EXCLUDE)))
+## The base image contains base dependencies like libraries and tools.
+#BASE_NAME           := base
+#BASE_BASEIMAGE      :=
+#BASE_SOURCE_INCLUDE :=
+#BASE_SOURCE_EXCLUDE := 
+#$(eval $(call LAYER,$(BASE_NAME),$(BASE_BASEIMAGE),$(BASE_SOURCE_INCLUDE),$(BASE_SOURCE_EXCLUDE)))
+#
+## The yarn image contains all the UI dependencies for the ui layer.
+#YARN_NAME           := yarn
+#YARN_BASEIMAGE      := base
+#YARN_SOURCE_INCLUDE := ui/yarn.lock ui/package.json
+#YARN_SOURCE_EXCLUDE :=
+#$(eval $(call LAYER,$(YARN_NAME),$(YARN_BASEIMAGE),$(YARN_SOURCE_INCLUDE),$(YARN_SOURCE_EXCLUDE)))
+#
+## The ui image contains the compiled ui code in ui/
+#UI_NAME           := ui
+#UI_BASEIMAGE      := yarn
+#UI_SOURCE_INCLUDE := ui/
+#UI_SOURCE_EXCLUDE :=
+#$(eval $(call LAYER,$(UI_NAME),$(UI_BASEIMAGE),$(UI_SOURCE_INCLUDE),$(UI_SOURCE_EXCLUDE)))
+#
+## The static image is the one we finally use for compilation of the source.
+#STATIC_NAME           := static
+#STATIC_BASEIMAGE      := ui
+#STATIC_SOURCE_INCLUDE := .
+#STATIC_SOURCE_EXCLUDE := release/ .circleci/
+#$(eval $(call LAYER,$(STATIC_NAME),$(STATIC_BASEIMAGE),$(STATIC_SOURCE_INCLUDE),$(STATIC_SOURCE_EXCLUDE)))
 
 write-cache-keys: $(addsuffix -write-cache-key,$(LAYERS))
 	@echo "==> All cache keys written."
@@ -205,7 +207,7 @@ BUILD_CONTAINER_NAME := build-$(PACKAGE_NAME)
 DOCKER_RUN_FLAGS := --name $(BUILD_CONTAINER_NAME)
 # DOCKER_RUN_COMMAND ties everything together to build the final package as a
 # single docker run invocation.
-DOCKER_RUN_COMMAND = docker run $(DOCKER_RUN_FLAGS) $(static_IMAGE_NAME) $(DOCKER_SHELL) "$(BUILD_COMMAND) && $(ARCHIVE_COMMAND)"
+DOCKER_RUN_COMMAND = docker run $(DOCKER_RUN_FLAGS) $(static_7e16e7cb2b063e5aa8a9127c279deacef009efca50ad10793ae43701a17a0b1c_IMAGE_NAME) $(DOCKER_SHELL) "$(BUILD_COMMAND) && $(ARCHIVE_COMMAND)"
 DOCKER_CP_COMMAND = docker cp $(BUILD_CONTAINER_NAME):/$(PACKAGE_PATH) $(PACKAGE_PATH)
 
 .PHONY: build
@@ -220,7 +222,7 @@ $(PACKAGE):
 	@# here. This allows us to skip checking the whole dependency tree, which means
 	@# we can buiild the package with just the static image, not relying on any of
 	@# the other base images to be present.
-	@if [ ! -f $(static_IMAGE) ]; then $(MAKE) -f $(THIS_FILE) $(static_IMAGE); fi
+	@if [ ! -f $(static_7e16e7cb2b063e5aa8a9127c279deacef009efca50ad10793ae43701a17a0b1c_IMAGE) ]; then $(MAKE) -f $(THIS_FILE) $(static_7e16e7cb2b063e5aa8a9127c279deacef009efca50ad10793ae43701a17a0b1c_IMAGE); fi
 	@mkdir -p $$(dirname $@)
 	@echo "==> Building package: $@"
 	@rm -rf ./$(OUT_DIR)

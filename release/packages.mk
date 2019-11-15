@@ -171,18 +171,18 @@ $(DOCKERFILES_DIR)/%: $(PACKAGES_DIR)/%.json $(LAYER_TEMPLATES)
 		T=$(LAYER_TEMPLATE_DIR)/$$NAME; \
 		gomplate -f $$T -d vars=$< > $$DF; \
 		LAYER_CHECKSUM=$$(sha256sum < $$DF | cut -d' ' -f1); \
+		LAYER_ID=$${NAME}_$${LAYER_CHECKSUM}; \
 		echo "Comment: Write this checksum to a file for later reference." > /dev/null; \
 		echo "$$LAYER_CHECKSUM" > $$DF.checksum; \
 		echo "Comment: Copy this layer out to layers.lock for reference from packages." > /dev/null; \
-		mkdir -p layers.lock/$$NAME; \
-		cp $$DF layers.lock/$$NAME/$$LAYER_CHECKSUM.Dockerfile; \
+		mkdir -p $$(dirname layers.lock/$$LAYER_ID); \
+		cp $$DF layers.lock/$$LAYER_ID.Dockerfile; \
 		echo "Comment: write the makefile fragment for this layer." > /dev/null; \
 		echo "TODO: Factor this out, it's a hangover from earlier implementation." > /dev/null; \
-		MKFILE="layers.lock/$$NAME/$$LAYER_CHECKSUM.mk"; \
+		MKFILE="layers.lock/$$LAYER_ID.mk"; \
 		SOURCE_INCLUDE="$$(yq -r ".layers[] | select(.name==\"$$NAME\") | .[\"source-include\"]" < $(SPEC))"; \
 		SOURCE_EXCLUDE="$$(yq -r ".layers[] | select(.name==\"$$NAME\") | .[\"source-exclude\"]" < $(SPEC))"; \
 		rm -f $$MKFILE; \
-		LAYER_ID=$${NAME}_$${LAYER_CHECKSUM}; \
 		echo "LAYER_$${LAYER_ID}_ID             := $${LAYER_ID}" >> $$MKFILE; \
 		echo "LAYER_$${LAYER_ID}_BASE_LAYER     := $${BASE_LAYER_ID}" >> $$MKFILE; \
 		echo "LAYER_$${LAYER_ID}_SOURCE_INCLUDE := $${SOURCE_INCLUDE}" >> $$MKFILE; \
