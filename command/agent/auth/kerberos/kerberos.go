@@ -70,7 +70,7 @@ func (k *kerberosMethod) Authenticate(context.Context, *api.Client) (string, htt
 	return k.mountPath, *header, nil, nil
 }
 
-// These functions are implemented to meed the AuthHandler interface,
+// These functions are implemented to meet the AuthHandler interface,
 // but we don't need to take advantage of them.
 func (k *kerberosMethod) NewCreds() chan struct{} { return nil }
 func (k *kerberosMethod) CredSuccess()            {}
