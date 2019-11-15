@@ -36,6 +36,14 @@ defaults:
   # This should be used in the PACKAGE_NAME template.
   PRODUCT_VERSION: 0.0.0-snapshot
 
+  # PRODUCT_REVISION is the revision of the source code to build.
+  # This is a git ref i.e. a commit SHA, branch name or tag.
+  # It left empty ("") then default to building whatever is in the current
+  # working tree, even if it is dirty (contains uncommitted changes).
+  # This should usually be left empty, it is overridden on a one-off basis
+  # when producing release or custom builds.
+  PRODUCT_REVISION: ""
+
   # GO_VERSION is the version of the Go toolchain to use to compile this package.
   GO_VERSION: 1.12.13
 

@@ -11,6 +11,18 @@ THIS_DIR := $(shell dirname $(THIS_FILE))
 DOCKERFILES_DIR := $(THIS_DIR)/layers.lock
 include $(THIS_DIR)/layer.mk
 
+ifeq ($(PRODUCT_REVISION),)
+GIT_REF := HEAD
+ALLOW_DIRTY ?= YES
+DIRTY := $(shell git diff --exit code > /dev/null 2>&1 || echo "dirty_")
+PACKAGE_SOURCE_ID := $(DIRTY)$(shell git rev-parse $(PRODUCT_REVISION))
+else
+GIT_REF := $(PRODUCT_REVISION)
+ALLOW_DIRTY := NO
+PACKAGE_SOURCE_ID := $(shell git rev-parse $(PRODUCT_REVISION))
+endif
+
+
 ### BUILDER_IMAGE_LAYERS
 
 # Each grouping below defines a layer of the builder image.
@@ -66,8 +78,7 @@ PRODUCT_VERSION_MMP ?= 0.0.0
 # BUILD_PRERELEASE is the prerelease field of the version. If nonempty, it must begin with a -.
 PRODUCT_VERSION_PRE ?= -dev
 # EDITION is used to differentiate alternate builds of the same commit, which may differ in
-# terms of build tags or other build inputs. EDITION should always form part of the BUNDLE_NAME,
-# and if non-empty MUST begin with a +.
+# terms of build tags or other build inputs. EDITION should always form part of the BUNDLE_NAME.
 EDITION ?=
 
 ### Calculated package parameters.
@@ -80,10 +91,8 @@ PACKAGE_FILENAME ?= $(PACKAGE_NAME).zip
 # PACKAGE is the zip file containing a specific binary.
 PACKAGE = $(OUT_DIR)/$(PACKAGE_FILENAME)
 
-### Calculated build inputs.
-
 # LDFLAGS: These linker commands inject build metadata into the binary.
-LDFLAGS += -X github.com/hashicorp/vault/sdk/version.GitCommit="$(static_SOURCE_ID)"
+LDFLAGS += -X github.com/hashicorp/vault/sdk/version.GitCommit="$(PACKAGE_SOURCE_ID)"
 LDFLAGS += -X github.com/hashicorp/vault/sdk/version.Version="$(PRODUCT_VERSION_MMP)"
 LDFLAGS += -X github.com/hashicorp/vault/sdk/version.VersionPrerelease="$(PRODUCT_VERSION_PRE)"
 

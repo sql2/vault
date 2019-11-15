@@ -107,23 +107,48 @@ $(1)_CACHE = $(CACHE_ROOT)/$$($(1)_NAME)/$$($(1)_SOURCE_ID)
 $(1)_SOURCE_LIST = $$($(1)_CACHE)/source.list
 $(1)_DOCKERFILE = $(DOCKERFILES_DIR)/$$($(1)_NAME).Dockerfile
 $(1)_IMAGE_NAME = vault-builder-$$($(1)_NAME):$$($(1)_SOURCE_ID)
+
+# If no source is included, set source ID to none.
+# Note that we include the checksum of the generated Dockerfile as part of cache IDs
+# so we still invalidate the cache appropriately.
+ifeq ($$($(1)_SOURCE_INCLUDE),)
+
+$(1)_SOURCE_ID = none
+
+else
+
 $(1)_SOURCE_GIT = $$($(1)_SOURCE_INCLUDE) $$(call QUOTE_LIST,$$(addprefix $(GIT_EXCLUDE_PREFIX),$$($(1)_SOURCE_EXCLUDE)))
 $(1)_SOURCE_CMD = { \
-					  git ls-files HEAD -- $$($(1)_SOURCE_GIT); \
-			 		  git ls-files -m --exclude-standard HEAD -- $$($(1)_SOURCE_GIT); \
+					  git ls-files $(GIT_REF) -- $$($(1)_SOURCE_GIT); \
+			 		  git ls-files -m --exclude-standard $(GIT_REF) -- $$($(1)_SOURCE_GIT); \
 			 	  } | sort | uniq
 	
-$(1)_SOURCE_COMMIT       = $$(shell git rev-list -n1 HEAD -- $$($(1)_SOURCE_GIT))
+$(1)_SOURCE_COMMIT       = $$(shell git rev-list -n1 $(GIT_REF) -- $$($(1)_SOURCE_GIT))
+
+# If we allow dirty builds, generate the source ID as a function of the
+# source in play. Where the source all happens to match a Git commit,
+# that commit's SHA will be the source ID.
+ifeq ($(ALLOW_DIRTY),YES)
+
 $(1)_SOURCE_MODIFIED     = $$(shell if git diff -s --exit-code -- $$($(1)_SOURCE_GIT); then echo NO; else echo YES; fi)
 $(1)_SOURCE_MODIFIED_SUM = $$(shell git diff -- $$($(1)_SOURCE_GIT) | $(SUM))
 $(1)_SOURCE_NEW          = $$(shell git ls-files -o --exclude-standard -- $$($(1)_SOURCE_GIT))
 $(1)_SOURCE_NEW_SUM      = $$(shell git ls-files -o --exclude-standard -- $$($(1)_SOURCE_GIT) | $(SUM))
 $(1)_SOURCE_DIRTY        = $$(shell if [ $$($(1)_SOURCE_MODIFIED) == NO ] && [ -z "$$($(1)_SOURCE_NEW)" ]; then echo NO; else echo YES; fi)
+
 $(1)_SOURCE_ID           = $$(shell if [ $$($(1)_SOURCE_MODIFIED) == NO ] && [ -z "$$($(1)_SOURCE_NEW)" ]; then \
 								   echo $$($(1)_SOURCE_COMMIT); \
 				      		   else \
 								   echo -n dirty_; echo $$($(1)_SOURCE_MODIFIED_SUM) $$($(1)_SOURCE_NEW_SUM) | $(SUM); \
 							   fi)
+
+# No dirty builds allowed, so the SOURCE_ID is the git commit SHA.
+else
+
+$(1)_SOURCE_ID           = $$($(1)_SOURCE_COMMIT)
+
+endif
+endif
 
 # Ensure the source list is written and the cache dir exists.
 _ := $$(shell mkdir -p $$($(1)_CACHE); $$($(1)_SOURCE_CMD) > $$($(1)_SOURCE_LIST))

@@ -208,11 +208,13 @@ $(PACKAGES_WITH_CHECKSUMS_DIR)/%.json: $(PACKAGES_DIR)/%.json $(DOCKERFILES_DIR)
 	@echo "PACKAGE_SPEC_ID: $$(sha256sum < $@ | cut -d' ' -f1)" >> $@
 	@yq . < $@ | sponge $@
 
+BUILD_COMMAND := make -C ../ -f release/build.mk build
+
 # COMMANDS files are created by this rule. They are one-line shell scripts that can
 # be invoked to produce a certain package.
 $(COMMANDS_DIR)/%.sh: $(PACKAGES_WITH_CHECKSUMS_DIR)/%.json
 	@{ echo "# Build package: $$(jq -r '.PACKAGE_NAME' < $<)"; } > $@ 
-	@{ jq 'to_entries | .[] | "\(.key)=\(.value)"' < $<; echo "make build"; } | xargs >> $@
+	@{ jq 'to_entries | .[] | "\(.key)=\(.value)"' < $<; echo "$(BUILD_COMMAND)"; } | xargs >> $@
 
 # LIST just plonks all the package json files generated above into an array,
 # and converts it to YAML.
