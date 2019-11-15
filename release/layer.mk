@@ -107,7 +107,7 @@ $(1)_CACHE = $(CACHE_ROOT)/$$($(1)_NAME)/$$($(1)_SOURCE_ID)
 $(1)_SOURCE_LIST = $$($(1)_CACHE)/source.list
 $(1)_DOCKERFILE = $(DOCKERFILES_DIR)/$$($(1)_NAME).Dockerfile
 $(1)_IMAGE_NAME = vault-builder-$$($(1)_NAME):$$($(1)_SOURCE_ID)
-$(1)_SOURCE_GIT = $$($(1)_SOURCE_INCLUDE) $$($(1)_DOCKERFILE) $$(call QUOTE_LIST,$$(addprefix $(GIT_EXCLUDE_PREFIX),$$($(1)_SOURCE_EXCLUDE)))
+$(1)_SOURCE_GIT = $$($(1)_SOURCE_INCLUDE) $$(call QUOTE_LIST,$$(addprefix $(GIT_EXCLUDE_PREFIX),$$($(1)_SOURCE_EXCLUDE)))
 $(1)_SOURCE_CMD = { \
 					  git ls-files HEAD -- $$($(1)_SOURCE_GIT); \
 			 		  git ls-files -m --exclude-standard HEAD -- $$($(1)_SOURCE_GIT); \
@@ -238,7 +238,7 @@ $$($(1)_IMAGE): | $$($(1)_BASE_IMAGE) $$($(1)_SOURCE_ARCHIVE)
 # Build the source archive used as docker context for this image.
 $$($(1)_SOURCE_ARCHIVE): $$($(1)_SOURCE)
 	@echo "==> Building source archive: $$($(1)_NAME); $$($(1)_SOURCE_ID)"
-	tar czf $$@ -T - < $$($(1)_SOURCE_LIST)
+	{ echo $$($(1)_DOCKERFILE); cat $$($(1)_SOURCE_LIST); } | tar czf $$@ -T -
 
 # Save the docker image as a tar.gz.
 $$($(1)_IMAGE_ARCHIVE): | $$($(1)_IMAGE)
