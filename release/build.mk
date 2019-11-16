@@ -101,9 +101,6 @@ build-all-layers: $(addsuffix -image,$(LAYERS))
 
 save-all-layers: $(DOCKER_BUILDER_CACHE)
 	@ls -lh $<
-	
-	# TODO: Now we have saved the builder cache, we need to write a cache
-	# key in the correct order to ensure CircleCI's prefix match is efficient.
 
 $(DOCKER_BUILDER_CACHE): $(addsuffix -layer-refs,$(LAYERS))
 	@cat $(addsuffix /image.layer_refs,$(LAYER_CACHES)) | sort | uniq > $(DOCKER_LAYER_LIST)
@@ -115,10 +112,12 @@ debug: $(addsuffix -debug,$(LAYERS))
 # PACKAGE_OUT_ROOT is the root directory where the final packages will be written to.
 PACKAGE_OUT_ROOT ?= dist
 
+VERSION_PATH := github.com/hashicorp/vault/vendor/github.com/hashicorp/vault/sdk/version
+
 # LDFLAGS: These linker commands inject build metadata into the binary.
-LDFLAGS += -X github.com/hashicorp/vault/sdk/version.GitCommit="$(PACKAGE_SOURCE_ID)"
-LDFLAGS += -X github.com/hashicorp/vault/sdk/version.Version="$(PRODUCT_VERSION_MMP)"
-LDFLAGS += -X github.com/hashicorp/vault/sdk/version.VersionPrerelease="$(PRODUCT_VERSION_PRE)"
+LDFLAGS += -X $(VERSION_PATH).GitCommit=$(PACKAGE_SOURCE_ID)
+LDFLAGS += -X $(VERSION_PATH).Version=$(PRODUCT_VERSION_MMP)
+LDFLAGS += -X $(VERSION_PATH).VersionPrerelease=$(PRODUCT_VERSION_PRE)
 
 # OUT_DIR tells the Go toolchain where to place the binary.
 OUT_DIR := $(PACKAGE_OUT_ROOT)/$(PACKAGE_NAME)/$(PACKAGE_SOURCE_ID)/$(PACKAGE_SPEC_ID)
@@ -162,7 +161,7 @@ GO_BUILD_ENV := $(shell \
 BUILD_COMMAND := \
 	$(GO_BUILD_ENV) \
 	go build -v \
-	-tags '$(GO_BUILD_TAGS)' \
+	-tags '$(BUILD_TAGS)' \
 	-ldflags '$(LDFLAGS)' \
 	-o /$(OUT_DIR)/$(BINARY_NAME)
 
