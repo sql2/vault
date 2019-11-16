@@ -3,7 +3,8 @@
 ### INSTEAD: Edit or merge the source in this directory then run 'make packages.lock'.
 ### ***
 packages:
-  - BUILD_TAGS: vault
+  - BINARY_NAME: vault
+    BUILD_TAGS: vault
     CGOENABLED: '0'
     GO111MODULE: 'off'
     GO_VERSION: 1.12.13
@@ -19,14 +20,15 @@ packages:
     BUILD_JOB_NAME: package_darwin_386
     PACKAGE_NAME: vault_0.0.0-snapshot_darwin_386
     PRODUCT_VERSION_MMP: 0.0.0
-    BUILDER_CACHE_KEY: cache-base}-{{ checksum .buildcache/base-25e9840bf289aaf9dd6e86ac9c7be90009517f66cbc9efbb385ed676efef9ed9-cache-key
-      }}-yarn}-{{ checksum .buildcache/yarn-246d7eef3c85dfaba9ae31ffb25d5e52a864121c527907337bd6e5688a49b7aa-cache-key
-      }}-ui}-{{ checksum .buildcache/ui-778061c2b8e11b2550d4dae696decb960c312b34f4f7c0934fca9fe7a4c39817-cache-key
-      }}-static}-{{ checksum .buildcache/static-7e16e7cb2b063e5aa8a9127c279deacef009efca50ad10793ae43701a17a0b1c-cache-key
+    BUILDER_CACHE_KEY: cache-base-{{ checksum .buildcache/base-25e9840bf289aaf9dd6e86ac9c7be90009517f66cbc9efbb385ed676efef9ed9-cache-key
+      }}-yarn-{{ checksum .buildcache/yarn-246d7eef3c85dfaba9ae31ffb25d5e52a864121c527907337bd6e5688a49b7aa-cache-key
+      }}-ui-{{ checksum .buildcache/ui-778061c2b8e11b2550d4dae696decb960c312b34f4f7c0934fca9fe7a4c39817-cache-key
+      }}-static-{{ checksum .buildcache/static-7e16e7cb2b063e5aa8a9127c279deacef009efca50ad10793ae43701a17a0b1c-cache-key
       }}
     BUILDER_LAYER_ID: static_7e16e7cb2b063e5aa8a9127c279deacef009efca50ad10793ae43701a17a0b1c
-    PACKAGE_SPEC_ID: 5efd055796772a69a96d7ec438f09fbb2d5c7558943884653685e273f6254d06
-  - BUILD_TAGS: vault
+    PACKAGE_SPEC_ID: 56eec8e24e7c5e71adcb214514cf077234ce1f910c6acb226f71cfad9f03208e
+  - BINARY_NAME: vault
+    BUILD_TAGS: vault
     CGOENABLED: '0'
     GO111MODULE: 'off'
     GO_VERSION: 1.12.13
@@ -42,14 +44,15 @@ packages:
     BUILD_JOB_NAME: package_darwin_amd64
     PACKAGE_NAME: vault_0.0.0-snapshot_darwin_amd64
     PRODUCT_VERSION_MMP: 0.0.0
-    BUILDER_CACHE_KEY: cache-base}-{{ checksum .buildcache/base-25e9840bf289aaf9dd6e86ac9c7be90009517f66cbc9efbb385ed676efef9ed9-cache-key
-      }}-yarn}-{{ checksum .buildcache/yarn-246d7eef3c85dfaba9ae31ffb25d5e52a864121c527907337bd6e5688a49b7aa-cache-key
-      }}-ui}-{{ checksum .buildcache/ui-778061c2b8e11b2550d4dae696decb960c312b34f4f7c0934fca9fe7a4c39817-cache-key
-      }}-static}-{{ checksum .buildcache/static-7e16e7cb2b063e5aa8a9127c279deacef009efca50ad10793ae43701a17a0b1c-cache-key
+    BUILDER_CACHE_KEY: cache-base-{{ checksum .buildcache/base-25e9840bf289aaf9dd6e86ac9c7be90009517f66cbc9efbb385ed676efef9ed9-cache-key
+      }}-yarn-{{ checksum .buildcache/yarn-246d7eef3c85dfaba9ae31ffb25d5e52a864121c527907337bd6e5688a49b7aa-cache-key
+      }}-ui-{{ checksum .buildcache/ui-778061c2b8e11b2550d4dae696decb960c312b34f4f7c0934fca9fe7a4c39817-cache-key
+      }}-static-{{ checksum .buildcache/static-7e16e7cb2b063e5aa8a9127c279deacef009efca50ad10793ae43701a17a0b1c-cache-key
       }}
     BUILDER_LAYER_ID: static_7e16e7cb2b063e5aa8a9127c279deacef009efca50ad10793ae43701a17a0b1c
-    PACKAGE_SPEC_ID: 53c656eef70c9fbdfbb7f3facdcd4dcbcf7d5ee956ce130bacb6525cff7e2cc7
-  - BUILD_TAGS: vault
+    PACKAGE_SPEC_ID: c16fcd94cafdbbd93b04041b82d7f952cf6e76d1664cb45a288996d25f2ee7c6
+  - BINARY_NAME: vault
+    BUILD_TAGS: vault
     CGOENABLED: '0'
     GO111MODULE: 'off'
     GO_VERSION: 1.12.13
@@ -65,14 +68,15 @@ packages:
     BUILD_JOB_NAME: package_freebsd_386
     PACKAGE_NAME: vault_0.0.0-snapshot_freebsd_386
     PRODUCT_VERSION_MMP: 0.0.0
-    BUILDER_CACHE_KEY: cache-base}-{{ checksum .buildcache/base-25e9840bf289aaf9dd6e86ac9c7be90009517f66cbc9efbb385ed676efef9ed9-cache-key
-      }}-yarn}-{{ checksum .buildcache/yarn-246d7eef3c85dfaba9ae31ffb25d5e52a864121c527907337bd6e5688a49b7aa-cache-key
-      }}-ui}-{{ checksum .buildcache/ui-778061c2b8e11b2550d4dae696decb960c312b34f4f7c0934fca9fe7a4c39817-cache-key
-      }}-static}-{{ checksum .buildcache/static-7e16e7cb2b063e5aa8a9127c279deacef009efca50ad10793ae43701a17a0b1c-cache-key
+    BUILDER_CACHE_KEY: cache-base-{{ checksum .buildcache/base-25e9840bf289aaf9dd6e86ac9c7be90009517f66cbc9efbb385ed676efef9ed9-cache-key
+      }}-yarn-{{ checksum .buildcache/yarn-246d7eef3c85dfaba9ae31ffb25d5e52a864121c527907337bd6e5688a49b7aa-cache-key
+      }}-ui-{{ checksum .buildcache/ui-778061c2b8e11b2550d4dae696decb960c312b34f4f7c0934fca9fe7a4c39817-cache-key
+      }}-static-{{ checksum .buildcache/static-7e16e7cb2b063e5aa8a9127c279deacef009efca50ad10793ae43701a17a0b1c-cache-key
       }}
     BUILDER_LAYER_ID: static_7e16e7cb2b063e5aa8a9127c279deacef009efca50ad10793ae43701a17a0b1c
-    PACKAGE_SPEC_ID: b962a6dc4d3736f913bb2d2c209f7a2d785157b9ca90b1b5dfdd457bea69cb56
-  - BUILD_TAGS: vault
+    PACKAGE_SPEC_ID: 21a30002539d9d3cf77f99cef581771f802eb9a537210b3e9392fe08d7f6bb26
+  - BINARY_NAME: vault
+    BUILD_TAGS: vault
     CGOENABLED: '0'
     GO111MODULE: 'off'
     GO_VERSION: 1.12.13
@@ -88,14 +92,15 @@ packages:
     BUILD_JOB_NAME: package_freebsd_amd64
     PACKAGE_NAME: vault_0.0.0-snapshot_freebsd_amd64
     PRODUCT_VERSION_MMP: 0.0.0
-    BUILDER_CACHE_KEY: cache-base}-{{ checksum .buildcache/base-25e9840bf289aaf9dd6e86ac9c7be90009517f66cbc9efbb385ed676efef9ed9-cache-key
-      }}-yarn}-{{ checksum .buildcache/yarn-246d7eef3c85dfaba9ae31ffb25d5e52a864121c527907337bd6e5688a49b7aa-cache-key
-      }}-ui}-{{ checksum .buildcache/ui-778061c2b8e11b2550d4dae696decb960c312b34f4f7c0934fca9fe7a4c39817-cache-key
-      }}-static}-{{ checksum .buildcache/static-7e16e7cb2b063e5aa8a9127c279deacef009efca50ad10793ae43701a17a0b1c-cache-key
+    BUILDER_CACHE_KEY: cache-base-{{ checksum .buildcache/base-25e9840bf289aaf9dd6e86ac9c7be90009517f66cbc9efbb385ed676efef9ed9-cache-key
+      }}-yarn-{{ checksum .buildcache/yarn-246d7eef3c85dfaba9ae31ffb25d5e52a864121c527907337bd6e5688a49b7aa-cache-key
+      }}-ui-{{ checksum .buildcache/ui-778061c2b8e11b2550d4dae696decb960c312b34f4f7c0934fca9fe7a4c39817-cache-key
+      }}-static-{{ checksum .buildcache/static-7e16e7cb2b063e5aa8a9127c279deacef009efca50ad10793ae43701a17a0b1c-cache-key
       }}
     BUILDER_LAYER_ID: static_7e16e7cb2b063e5aa8a9127c279deacef009efca50ad10793ae43701a17a0b1c
-    PACKAGE_SPEC_ID: 6bbc1978f647d5c3b844ba83cc44bd45058a7d43455627e76d5b8aedb055d953
-  - BUILD_TAGS: vault
+    PACKAGE_SPEC_ID: 2317cd16639b0c7b59cf51df2fa812e82fe2d367ba6f6451884adcd79f7ac3b7
+  - BINARY_NAME: vault
+    BUILD_TAGS: vault
     CGOENABLED: '0'
     GO111MODULE: 'off'
     GO_VERSION: 1.12.13
@@ -111,14 +116,15 @@ packages:
     BUILD_JOB_NAME: package_freebsd_arm
     PACKAGE_NAME: vault_0.0.0-snapshot_freebsd_arm
     PRODUCT_VERSION_MMP: 0.0.0
-    BUILDER_CACHE_KEY: cache-base}-{{ checksum .buildcache/base-25e9840bf289aaf9dd6e86ac9c7be90009517f66cbc9efbb385ed676efef9ed9-cache-key
-      }}-yarn}-{{ checksum .buildcache/yarn-246d7eef3c85dfaba9ae31ffb25d5e52a864121c527907337bd6e5688a49b7aa-cache-key
-      }}-ui}-{{ checksum .buildcache/ui-778061c2b8e11b2550d4dae696decb960c312b34f4f7c0934fca9fe7a4c39817-cache-key
-      }}-static}-{{ checksum .buildcache/static-7e16e7cb2b063e5aa8a9127c279deacef009efca50ad10793ae43701a17a0b1c-cache-key
+    BUILDER_CACHE_KEY: cache-base-{{ checksum .buildcache/base-25e9840bf289aaf9dd6e86ac9c7be90009517f66cbc9efbb385ed676efef9ed9-cache-key
+      }}-yarn-{{ checksum .buildcache/yarn-246d7eef3c85dfaba9ae31ffb25d5e52a864121c527907337bd6e5688a49b7aa-cache-key
+      }}-ui-{{ checksum .buildcache/ui-778061c2b8e11b2550d4dae696decb960c312b34f4f7c0934fca9fe7a4c39817-cache-key
+      }}-static-{{ checksum .buildcache/static-7e16e7cb2b063e5aa8a9127c279deacef009efca50ad10793ae43701a17a0b1c-cache-key
       }}
     BUILDER_LAYER_ID: static_7e16e7cb2b063e5aa8a9127c279deacef009efca50ad10793ae43701a17a0b1c
-    PACKAGE_SPEC_ID: 5a46bb09b154203a7cd038a36dbf57991fd17f37886dab9d3212de596316b223
-  - BUILD_TAGS: vault
+    PACKAGE_SPEC_ID: 11904d5a4fe6c921e9e2d1eade54b5184ce05ced8d67e9f8dc0d7d81a9c1198d
+  - BINARY_NAME: vault
+    BUILD_TAGS: vault
     CGOENABLED: '0'
     GO111MODULE: 'off'
     GO_VERSION: 1.12.13
@@ -134,14 +140,15 @@ packages:
     BUILD_JOB_NAME: package_linux_386
     PACKAGE_NAME: vault_0.0.0-snapshot_linux_386
     PRODUCT_VERSION_MMP: 0.0.0
-    BUILDER_CACHE_KEY: cache-base}-{{ checksum .buildcache/base-25e9840bf289aaf9dd6e86ac9c7be90009517f66cbc9efbb385ed676efef9ed9-cache-key
-      }}-yarn}-{{ checksum .buildcache/yarn-246d7eef3c85dfaba9ae31ffb25d5e52a864121c527907337bd6e5688a49b7aa-cache-key
-      }}-ui}-{{ checksum .buildcache/ui-778061c2b8e11b2550d4dae696decb960c312b34f4f7c0934fca9fe7a4c39817-cache-key
-      }}-static}-{{ checksum .buildcache/static-7e16e7cb2b063e5aa8a9127c279deacef009efca50ad10793ae43701a17a0b1c-cache-key
+    BUILDER_CACHE_KEY: cache-base-{{ checksum .buildcache/base-25e9840bf289aaf9dd6e86ac9c7be90009517f66cbc9efbb385ed676efef9ed9-cache-key
+      }}-yarn-{{ checksum .buildcache/yarn-246d7eef3c85dfaba9ae31ffb25d5e52a864121c527907337bd6e5688a49b7aa-cache-key
+      }}-ui-{{ checksum .buildcache/ui-778061c2b8e11b2550d4dae696decb960c312b34f4f7c0934fca9fe7a4c39817-cache-key
+      }}-static-{{ checksum .buildcache/static-7e16e7cb2b063e5aa8a9127c279deacef009efca50ad10793ae43701a17a0b1c-cache-key
       }}
     BUILDER_LAYER_ID: static_7e16e7cb2b063e5aa8a9127c279deacef009efca50ad10793ae43701a17a0b1c
-    PACKAGE_SPEC_ID: 213fc93ea798fa96bd5af1a3901700a32935c965fb285a7020867d046da5ee4c
-  - BUILD_TAGS: vault
+    PACKAGE_SPEC_ID: ac8d8cdc0c8932680d51dc351b42ae46f402f21c8b411d342bb783375aac8d10
+  - BINARY_NAME: vault
+    BUILD_TAGS: vault
     CGOENABLED: '0'
     GO111MODULE: 'off'
     GO_VERSION: 1.12.13
@@ -157,14 +164,15 @@ packages:
     BUILD_JOB_NAME: package_linux_amd64
     PACKAGE_NAME: vault_0.0.0-snapshot_linux_amd64
     PRODUCT_VERSION_MMP: 0.0.0
-    BUILDER_CACHE_KEY: cache-base}-{{ checksum .buildcache/base-25e9840bf289aaf9dd6e86ac9c7be90009517f66cbc9efbb385ed676efef9ed9-cache-key
-      }}-yarn}-{{ checksum .buildcache/yarn-246d7eef3c85dfaba9ae31ffb25d5e52a864121c527907337bd6e5688a49b7aa-cache-key
-      }}-ui}-{{ checksum .buildcache/ui-778061c2b8e11b2550d4dae696decb960c312b34f4f7c0934fca9fe7a4c39817-cache-key
-      }}-static}-{{ checksum .buildcache/static-7e16e7cb2b063e5aa8a9127c279deacef009efca50ad10793ae43701a17a0b1c-cache-key
+    BUILDER_CACHE_KEY: cache-base-{{ checksum .buildcache/base-25e9840bf289aaf9dd6e86ac9c7be90009517f66cbc9efbb385ed676efef9ed9-cache-key
+      }}-yarn-{{ checksum .buildcache/yarn-246d7eef3c85dfaba9ae31ffb25d5e52a864121c527907337bd6e5688a49b7aa-cache-key
+      }}-ui-{{ checksum .buildcache/ui-778061c2b8e11b2550d4dae696decb960c312b34f4f7c0934fca9fe7a4c39817-cache-key
+      }}-static-{{ checksum .buildcache/static-7e16e7cb2b063e5aa8a9127c279deacef009efca50ad10793ae43701a17a0b1c-cache-key
       }}
     BUILDER_LAYER_ID: static_7e16e7cb2b063e5aa8a9127c279deacef009efca50ad10793ae43701a17a0b1c
-    PACKAGE_SPEC_ID: 3bebad1ba83f3ebbe5977a62d36d483b6df7528f8f6a23faa433f501935532e8
-  - BUILD_TAGS: vault
+    PACKAGE_SPEC_ID: 137a8b096920034641077b86db1c4e0f8d46d78b72fb31976e15d94ba6d34be3
+  - BINARY_NAME: vault
+    BUILD_TAGS: vault
     CGOENABLED: '0'
     GO111MODULE: 'off'
     GO_VERSION: 1.12.13
@@ -180,14 +188,15 @@ packages:
     BUILD_JOB_NAME: package_linux_arm
     PACKAGE_NAME: vault_0.0.0-snapshot_linux_arm
     PRODUCT_VERSION_MMP: 0.0.0
-    BUILDER_CACHE_KEY: cache-base}-{{ checksum .buildcache/base-25e9840bf289aaf9dd6e86ac9c7be90009517f66cbc9efbb385ed676efef9ed9-cache-key
-      }}-yarn}-{{ checksum .buildcache/yarn-246d7eef3c85dfaba9ae31ffb25d5e52a864121c527907337bd6e5688a49b7aa-cache-key
-      }}-ui}-{{ checksum .buildcache/ui-778061c2b8e11b2550d4dae696decb960c312b34f4f7c0934fca9fe7a4c39817-cache-key
-      }}-static}-{{ checksum .buildcache/static-7e16e7cb2b063e5aa8a9127c279deacef009efca50ad10793ae43701a17a0b1c-cache-key
+    BUILDER_CACHE_KEY: cache-base-{{ checksum .buildcache/base-25e9840bf289aaf9dd6e86ac9c7be90009517f66cbc9efbb385ed676efef9ed9-cache-key
+      }}-yarn-{{ checksum .buildcache/yarn-246d7eef3c85dfaba9ae31ffb25d5e52a864121c527907337bd6e5688a49b7aa-cache-key
+      }}-ui-{{ checksum .buildcache/ui-778061c2b8e11b2550d4dae696decb960c312b34f4f7c0934fca9fe7a4c39817-cache-key
+      }}-static-{{ checksum .buildcache/static-7e16e7cb2b063e5aa8a9127c279deacef009efca50ad10793ae43701a17a0b1c-cache-key
       }}
     BUILDER_LAYER_ID: static_7e16e7cb2b063e5aa8a9127c279deacef009efca50ad10793ae43701a17a0b1c
-    PACKAGE_SPEC_ID: 19a0079bc28248104466b46cc0505f33d13ce87c9f129b1c87f98840c9f226ac
-  - BUILD_TAGS: vault
+    PACKAGE_SPEC_ID: 37ae9a45f2a9351abe3c99d0f4de28344195f60108bf5e6b8b7d8cecab77e96b
+  - BINARY_NAME: vault
+    BUILD_TAGS: vault
     CGOENABLED: '0'
     GO111MODULE: 'off'
     GO_VERSION: 1.12.13
@@ -203,14 +212,15 @@ packages:
     BUILD_JOB_NAME: package_linux_arm64
     PACKAGE_NAME: vault_0.0.0-snapshot_linux_arm64
     PRODUCT_VERSION_MMP: 0.0.0
-    BUILDER_CACHE_KEY: cache-base}-{{ checksum .buildcache/base-25e9840bf289aaf9dd6e86ac9c7be90009517f66cbc9efbb385ed676efef9ed9-cache-key
-      }}-yarn}-{{ checksum .buildcache/yarn-246d7eef3c85dfaba9ae31ffb25d5e52a864121c527907337bd6e5688a49b7aa-cache-key
-      }}-ui}-{{ checksum .buildcache/ui-778061c2b8e11b2550d4dae696decb960c312b34f4f7c0934fca9fe7a4c39817-cache-key
-      }}-static}-{{ checksum .buildcache/static-7e16e7cb2b063e5aa8a9127c279deacef009efca50ad10793ae43701a17a0b1c-cache-key
+    BUILDER_CACHE_KEY: cache-base-{{ checksum .buildcache/base-25e9840bf289aaf9dd6e86ac9c7be90009517f66cbc9efbb385ed676efef9ed9-cache-key
+      }}-yarn-{{ checksum .buildcache/yarn-246d7eef3c85dfaba9ae31ffb25d5e52a864121c527907337bd6e5688a49b7aa-cache-key
+      }}-ui-{{ checksum .buildcache/ui-778061c2b8e11b2550d4dae696decb960c312b34f4f7c0934fca9fe7a4c39817-cache-key
+      }}-static-{{ checksum .buildcache/static-7e16e7cb2b063e5aa8a9127c279deacef009efca50ad10793ae43701a17a0b1c-cache-key
       }}
     BUILDER_LAYER_ID: static_7e16e7cb2b063e5aa8a9127c279deacef009efca50ad10793ae43701a17a0b1c
-    PACKAGE_SPEC_ID: cf7c2283c60049708284316de6715e94c943cf6165ccc3a481f1e17a915f6042
-  - BUILD_TAGS: vault
+    PACKAGE_SPEC_ID: 086924a2e10a33ade055a01c938bb6d1b4afa9ac42997d27cd0afa8c96efbc51
+  - BINARY_NAME: vault
+    BUILD_TAGS: vault
     CGOENABLED: '0'
     GO111MODULE: 'off'
     GO_VERSION: 1.12.13
@@ -226,14 +236,15 @@ packages:
     BUILD_JOB_NAME: package_netbsd_386
     PACKAGE_NAME: vault_0.0.0-snapshot_netbsd_386
     PRODUCT_VERSION_MMP: 0.0.0
-    BUILDER_CACHE_KEY: cache-base}-{{ checksum .buildcache/base-25e9840bf289aaf9dd6e86ac9c7be90009517f66cbc9efbb385ed676efef9ed9-cache-key
-      }}-yarn}-{{ checksum .buildcache/yarn-246d7eef3c85dfaba9ae31ffb25d5e52a864121c527907337bd6e5688a49b7aa-cache-key
-      }}-ui}-{{ checksum .buildcache/ui-778061c2b8e11b2550d4dae696decb960c312b34f4f7c0934fca9fe7a4c39817-cache-key
-      }}-static}-{{ checksum .buildcache/static-7e16e7cb2b063e5aa8a9127c279deacef009efca50ad10793ae43701a17a0b1c-cache-key
+    BUILDER_CACHE_KEY: cache-base-{{ checksum .buildcache/base-25e9840bf289aaf9dd6e86ac9c7be90009517f66cbc9efbb385ed676efef9ed9-cache-key
+      }}-yarn-{{ checksum .buildcache/yarn-246d7eef3c85dfaba9ae31ffb25d5e52a864121c527907337bd6e5688a49b7aa-cache-key
+      }}-ui-{{ checksum .buildcache/ui-778061c2b8e11b2550d4dae696decb960c312b34f4f7c0934fca9fe7a4c39817-cache-key
+      }}-static-{{ checksum .buildcache/static-7e16e7cb2b063e5aa8a9127c279deacef009efca50ad10793ae43701a17a0b1c-cache-key
       }}
     BUILDER_LAYER_ID: static_7e16e7cb2b063e5aa8a9127c279deacef009efca50ad10793ae43701a17a0b1c
-    PACKAGE_SPEC_ID: ae31fc260646215ed58c725c7ccfa4f691594b9fb9b52334bb5f52d04d49119a
-  - BUILD_TAGS: vault
+    PACKAGE_SPEC_ID: 3edd4cf60d25d508e7ca26b694d617ff9e61a686c68d5d4e428f423b96af8914
+  - BINARY_NAME: vault
+    BUILD_TAGS: vault
     CGOENABLED: '0'
     GO111MODULE: 'off'
     GO_VERSION: 1.12.13
@@ -249,14 +260,15 @@ packages:
     BUILD_JOB_NAME: package_netbsd_amd64
     PACKAGE_NAME: vault_0.0.0-snapshot_netbsd_amd64
     PRODUCT_VERSION_MMP: 0.0.0
-    BUILDER_CACHE_KEY: cache-base}-{{ checksum .buildcache/base-25e9840bf289aaf9dd6e86ac9c7be90009517f66cbc9efbb385ed676efef9ed9-cache-key
-      }}-yarn}-{{ checksum .buildcache/yarn-246d7eef3c85dfaba9ae31ffb25d5e52a864121c527907337bd6e5688a49b7aa-cache-key
-      }}-ui}-{{ checksum .buildcache/ui-778061c2b8e11b2550d4dae696decb960c312b34f4f7c0934fca9fe7a4c39817-cache-key
-      }}-static}-{{ checksum .buildcache/static-7e16e7cb2b063e5aa8a9127c279deacef009efca50ad10793ae43701a17a0b1c-cache-key
+    BUILDER_CACHE_KEY: cache-base-{{ checksum .buildcache/base-25e9840bf289aaf9dd6e86ac9c7be90009517f66cbc9efbb385ed676efef9ed9-cache-key
+      }}-yarn-{{ checksum .buildcache/yarn-246d7eef3c85dfaba9ae31ffb25d5e52a864121c527907337bd6e5688a49b7aa-cache-key
+      }}-ui-{{ checksum .buildcache/ui-778061c2b8e11b2550d4dae696decb960c312b34f4f7c0934fca9fe7a4c39817-cache-key
+      }}-static-{{ checksum .buildcache/static-7e16e7cb2b063e5aa8a9127c279deacef009efca50ad10793ae43701a17a0b1c-cache-key
       }}
     BUILDER_LAYER_ID: static_7e16e7cb2b063e5aa8a9127c279deacef009efca50ad10793ae43701a17a0b1c
-    PACKAGE_SPEC_ID: 3d555e0327e4f1657192e304c2e1c7f6ad7cf816574c7e120c113652e44235a4
-  - BUILD_TAGS: vault
+    PACKAGE_SPEC_ID: d934f72fc92e701ae8f921a1ccf22f8a4cff0fa72bcf6788a71821e227c67454
+  - BINARY_NAME: vault
+    BUILD_TAGS: vault
     CGOENABLED: '0'
     GO111MODULE: 'off'
     GO_VERSION: 1.12.13
@@ -272,14 +284,15 @@ packages:
     BUILD_JOB_NAME: package_openbsd_386
     PACKAGE_NAME: vault_0.0.0-snapshot_openbsd_386
     PRODUCT_VERSION_MMP: 0.0.0
-    BUILDER_CACHE_KEY: cache-base}-{{ checksum .buildcache/base-25e9840bf289aaf9dd6e86ac9c7be90009517f66cbc9efbb385ed676efef9ed9-cache-key
-      }}-yarn}-{{ checksum .buildcache/yarn-246d7eef3c85dfaba9ae31ffb25d5e52a864121c527907337bd6e5688a49b7aa-cache-key
-      }}-ui}-{{ checksum .buildcache/ui-778061c2b8e11b2550d4dae696decb960c312b34f4f7c0934fca9fe7a4c39817-cache-key
-      }}-static}-{{ checksum .buildcache/static-7e16e7cb2b063e5aa8a9127c279deacef009efca50ad10793ae43701a17a0b1c-cache-key
+    BUILDER_CACHE_KEY: cache-base-{{ checksum .buildcache/base-25e9840bf289aaf9dd6e86ac9c7be90009517f66cbc9efbb385ed676efef9ed9-cache-key
+      }}-yarn-{{ checksum .buildcache/yarn-246d7eef3c85dfaba9ae31ffb25d5e52a864121c527907337bd6e5688a49b7aa-cache-key
+      }}-ui-{{ checksum .buildcache/ui-778061c2b8e11b2550d4dae696decb960c312b34f4f7c0934fca9fe7a4c39817-cache-key
+      }}-static-{{ checksum .buildcache/static-7e16e7cb2b063e5aa8a9127c279deacef009efca50ad10793ae43701a17a0b1c-cache-key
       }}
     BUILDER_LAYER_ID: static_7e16e7cb2b063e5aa8a9127c279deacef009efca50ad10793ae43701a17a0b1c
-    PACKAGE_SPEC_ID: e7b93602b043cfffeaa1870181ebe62d52e94ea291c2aeb0212febe505a5de9e
-  - BUILD_TAGS: vault
+    PACKAGE_SPEC_ID: ccc6b46ccc1c10f5a8c94208e21156c69c061b844f03f4e26e3f5671076126f4
+  - BINARY_NAME: vault
+    BUILD_TAGS: vault
     CGOENABLED: '0'
     GO111MODULE: 'off'
     GO_VERSION: 1.12.13
@@ -295,14 +308,15 @@ packages:
     BUILD_JOB_NAME: package_openbsd_amd64
     PACKAGE_NAME: vault_0.0.0-snapshot_openbsd_amd64
     PRODUCT_VERSION_MMP: 0.0.0
-    BUILDER_CACHE_KEY: cache-base}-{{ checksum .buildcache/base-25e9840bf289aaf9dd6e86ac9c7be90009517f66cbc9efbb385ed676efef9ed9-cache-key
-      }}-yarn}-{{ checksum .buildcache/yarn-246d7eef3c85dfaba9ae31ffb25d5e52a864121c527907337bd6e5688a49b7aa-cache-key
-      }}-ui}-{{ checksum .buildcache/ui-778061c2b8e11b2550d4dae696decb960c312b34f4f7c0934fca9fe7a4c39817-cache-key
-      }}-static}-{{ checksum .buildcache/static-7e16e7cb2b063e5aa8a9127c279deacef009efca50ad10793ae43701a17a0b1c-cache-key
+    BUILDER_CACHE_KEY: cache-base-{{ checksum .buildcache/base-25e9840bf289aaf9dd6e86ac9c7be90009517f66cbc9efbb385ed676efef9ed9-cache-key
+      }}-yarn-{{ checksum .buildcache/yarn-246d7eef3c85dfaba9ae31ffb25d5e52a864121c527907337bd6e5688a49b7aa-cache-key
+      }}-ui-{{ checksum .buildcache/ui-778061c2b8e11b2550d4dae696decb960c312b34f4f7c0934fca9fe7a4c39817-cache-key
+      }}-static-{{ checksum .buildcache/static-7e16e7cb2b063e5aa8a9127c279deacef009efca50ad10793ae43701a17a0b1c-cache-key
       }}
     BUILDER_LAYER_ID: static_7e16e7cb2b063e5aa8a9127c279deacef009efca50ad10793ae43701a17a0b1c
-    PACKAGE_SPEC_ID: ad5fd65894f99c16b3441795089a0aa33d4f22136b296ef0431fae282c257e14
-  - BUILD_TAGS: vault
+    PACKAGE_SPEC_ID: b365e0737d389f592ca90a2ebba315bbdc673fb246a68a3fa810605e4558ee5f
+  - BINARY_NAME: vault
+    BUILD_TAGS: vault
     CGOENABLED: '0'
     GO111MODULE: 'off'
     GO_VERSION: 1.12.13
@@ -318,14 +332,15 @@ packages:
     BUILD_JOB_NAME: package_solaris_amd64
     PACKAGE_NAME: vault_0.0.0-snapshot_solaris_amd64
     PRODUCT_VERSION_MMP: 0.0.0
-    BUILDER_CACHE_KEY: cache-base}-{{ checksum .buildcache/base-25e9840bf289aaf9dd6e86ac9c7be90009517f66cbc9efbb385ed676efef9ed9-cache-key
-      }}-yarn}-{{ checksum .buildcache/yarn-246d7eef3c85dfaba9ae31ffb25d5e52a864121c527907337bd6e5688a49b7aa-cache-key
-      }}-ui}-{{ checksum .buildcache/ui-778061c2b8e11b2550d4dae696decb960c312b34f4f7c0934fca9fe7a4c39817-cache-key
-      }}-static}-{{ checksum .buildcache/static-7e16e7cb2b063e5aa8a9127c279deacef009efca50ad10793ae43701a17a0b1c-cache-key
+    BUILDER_CACHE_KEY: cache-base-{{ checksum .buildcache/base-25e9840bf289aaf9dd6e86ac9c7be90009517f66cbc9efbb385ed676efef9ed9-cache-key
+      }}-yarn-{{ checksum .buildcache/yarn-246d7eef3c85dfaba9ae31ffb25d5e52a864121c527907337bd6e5688a49b7aa-cache-key
+      }}-ui-{{ checksum .buildcache/ui-778061c2b8e11b2550d4dae696decb960c312b34f4f7c0934fca9fe7a4c39817-cache-key
+      }}-static-{{ checksum .buildcache/static-7e16e7cb2b063e5aa8a9127c279deacef009efca50ad10793ae43701a17a0b1c-cache-key
       }}
     BUILDER_LAYER_ID: static_7e16e7cb2b063e5aa8a9127c279deacef009efca50ad10793ae43701a17a0b1c
-    PACKAGE_SPEC_ID: fec5391b10592241b6f9c931559862416b04e6e8324cad5a7552bdf601896563
-  - BUILD_TAGS: vault
+    PACKAGE_SPEC_ID: c7ab39152edf384b53bca4e47bcb5b78e74e786df0980f7f4c955900445a9157
+  - BINARY_NAME: vault
+    BUILD_TAGS: vault
     CGOENABLED: '0'
     GO111MODULE: 'off'
     GO_VERSION: 1.12.13
@@ -341,14 +356,15 @@ packages:
     BUILD_JOB_NAME: package_windows_386
     PACKAGE_NAME: vault_0.0.0-snapshot_windows_386
     PRODUCT_VERSION_MMP: 0.0.0
-    BUILDER_CACHE_KEY: cache-base}-{{ checksum .buildcache/base-25e9840bf289aaf9dd6e86ac9c7be90009517f66cbc9efbb385ed676efef9ed9-cache-key
-      }}-yarn}-{{ checksum .buildcache/yarn-246d7eef3c85dfaba9ae31ffb25d5e52a864121c527907337bd6e5688a49b7aa-cache-key
-      }}-ui}-{{ checksum .buildcache/ui-778061c2b8e11b2550d4dae696decb960c312b34f4f7c0934fca9fe7a4c39817-cache-key
-      }}-static}-{{ checksum .buildcache/static-7e16e7cb2b063e5aa8a9127c279deacef009efca50ad10793ae43701a17a0b1c-cache-key
+    BUILDER_CACHE_KEY: cache-base-{{ checksum .buildcache/base-25e9840bf289aaf9dd6e86ac9c7be90009517f66cbc9efbb385ed676efef9ed9-cache-key
+      }}-yarn-{{ checksum .buildcache/yarn-246d7eef3c85dfaba9ae31ffb25d5e52a864121c527907337bd6e5688a49b7aa-cache-key
+      }}-ui-{{ checksum .buildcache/ui-778061c2b8e11b2550d4dae696decb960c312b34f4f7c0934fca9fe7a4c39817-cache-key
+      }}-static-{{ checksum .buildcache/static-7e16e7cb2b063e5aa8a9127c279deacef009efca50ad10793ae43701a17a0b1c-cache-key
       }}
     BUILDER_LAYER_ID: static_7e16e7cb2b063e5aa8a9127c279deacef009efca50ad10793ae43701a17a0b1c
-    PACKAGE_SPEC_ID: f565dc7fc0798ce63b1038d194d15c92f5739d1e2eee42e9f4e6fd7d4910e265
-  - BUILD_TAGS: vault
+    PACKAGE_SPEC_ID: 6a538a27e1c675876c1515de4006a219aa3ce4cd2f70a63753fe634e938b3aeb
+  - BINARY_NAME: vault
+    BUILD_TAGS: vault
     CGOENABLED: '0'
     GO111MODULE: 'off'
     GO_VERSION: 1.12.13
@@ -364,10 +380,10 @@ packages:
     BUILD_JOB_NAME: package_windows_amd64
     PACKAGE_NAME: vault_0.0.0-snapshot_windows_amd64
     PRODUCT_VERSION_MMP: 0.0.0
-    BUILDER_CACHE_KEY: cache-base}-{{ checksum .buildcache/base-25e9840bf289aaf9dd6e86ac9c7be90009517f66cbc9efbb385ed676efef9ed9-cache-key
-      }}-yarn}-{{ checksum .buildcache/yarn-246d7eef3c85dfaba9ae31ffb25d5e52a864121c527907337bd6e5688a49b7aa-cache-key
-      }}-ui}-{{ checksum .buildcache/ui-778061c2b8e11b2550d4dae696decb960c312b34f4f7c0934fca9fe7a4c39817-cache-key
-      }}-static}-{{ checksum .buildcache/static-7e16e7cb2b063e5aa8a9127c279deacef009efca50ad10793ae43701a17a0b1c-cache-key
+    BUILDER_CACHE_KEY: cache-base-{{ checksum .buildcache/base-25e9840bf289aaf9dd6e86ac9c7be90009517f66cbc9efbb385ed676efef9ed9-cache-key
+      }}-yarn-{{ checksum .buildcache/yarn-246d7eef3c85dfaba9ae31ffb25d5e52a864121c527907337bd6e5688a49b7aa-cache-key
+      }}-ui-{{ checksum .buildcache/ui-778061c2b8e11b2550d4dae696decb960c312b34f4f7c0934fca9fe7a4c39817-cache-key
+      }}-static-{{ checksum .buildcache/static-7e16e7cb2b063e5aa8a9127c279deacef009efca50ad10793ae43701a17a0b1c-cache-key
       }}
     BUILDER_LAYER_ID: static_7e16e7cb2b063e5aa8a9127c279deacef009efca50ad10793ae43701a17a0b1c
-    PACKAGE_SPEC_ID: 80b5b024ca76b49d3596f883ed5c246729d48fd99b1c03a9bb261c09e2f03d32
+    PACKAGE_SPEC_ID: ecad2ea75f2da793615f66730f8081f145fe43c8787baf6bd773893332fe8eb0

@@ -8,6 +8,39 @@
 
 SHELL := /usr/bin/env bash -euo pipefail -c
 
+# Make sure we have all the necessary inputs.
+# Ensure all of these are set in packages.lock
+ifeq ($(BUILDER_LAYER_ID),)
+$(error You must set BUILDER_LAYER_ID, try invoking 'make build' instead.)
+endif
+ifeq ($(BINARY_NAME),)
+$(error You must set BINARY_NAME, try invoking 'make build' instead.)
+endif
+ifeq ($(BUNDLE_NAME),)
+$(error You must set BUNDLE_NAME, try invoking 'make build' instead.)
+endif
+ifeq ($(PRODUCT_VERSION),)
+$(error You must set PRODUCT_VERSION, try invoking 'make build' instead.)
+endif
+ifeq ($(PRODUCT_VERSION_PRE),)
+$(error You must set PRODUCT_VERSION_PRE, try invoking 'make build' instead.)
+endif
+ifeq ($(PRODUCT_VERSION_MMP),)
+$(error You must set PRODUCT_VERSION_MMP, try invoking 'make build' instead.)
+endif
+ifeq ($(BUILD_JOB_NAME),)
+$(error You must set BUILD_JOB_NAME try invoking 'make build' instead.)
+endif
+ifeq ($(PACKAGE_NAME),)
+$(error You must set PACKAGE_NAME, try invoking 'make build' instead.)
+endif
+ifeq ($(BUILDER_LAYER_ID),)
+$(error You must set BUILDER_LAYER_ID, try invoking 'make build' instead.)
+endif
+ifeq ($(PACKAGE_SPEC_ID),)
+$(error You must set PACKAGE_SPEC_ID, try invoking 'make build' instead.)
+endif
+
 CACHE_ROOT := .buildcache
 
 THIS_FILE := $(lastword $(MAKEFILE_LIST))
@@ -151,10 +184,6 @@ DOCKER_CP_COMMAND = docker cp $(BUILD_CONTAINER_NAME):/$(PACKAGE) $(PACKAGE)
 package: $(PACKAGE)
 	@echo $<
 
-ifeq ($(BUILD_LAYER_IMAGE),)
-$(error You must set BUILD_LAYER_IMAGE, try invoking 'make build' instead.)
-endif
-
 # PACKAGE builds the package.
 $(PACKAGE): $(BUILD_LAYER_IMAGE)
 	@mkdir -p $$(dirname $@)
@@ -164,4 +193,4 @@ $(PACKAGE): $(BUILD_LAYER_IMAGE)
 	@docker rm -f $(BUILD_CONTAINER_NAME) > /dev/null 2>&1 || true # Speculative cleanup.
 	$(DOCKER_RUN_COMMAND)
 	$(DOCKER_CP_COMMAND)
-	@docker rm -f $(BUILD_CONTAINER_NAME) # Imperative cleanup.
+	@docker rm -f $(BUILD_CONTAINER_NAME)

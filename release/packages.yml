@@ -22,9 +22,13 @@
 # defaults contains default values for each package.
 # These values may be overridden on a per-package basis in the packages section.
 defaults:
-  # PRODUCT_NAME is used as the name of the binary we compile. It should also
+  # PRODUCT_NAME is the name of the product we are building. It should also
   # be used in the PACKAGE_NAME template.
   PRODUCT_NAME: vault
+
+  # BINARY_NAME is the name of the executable binary we compile and package.
+  # It is the name users will use on the CLI to invoke the product.
+  BINARY_NAME: vault
 
   # PRODUCT_EDITION is an additional differentiator for a given package. It should
   # be used in the PACKAGE_NAME template.
