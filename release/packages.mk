@@ -206,7 +206,7 @@ $(PACKAGES_WITH_CHECKSUMS_DIR)/%.json: $(PACKAGES_DIR)/%.json $(DOCKERFILES_DIR)
 		((i++)); \
 		LAYER_CHECKSUM=$$(cat $(DOCKERFILES_DIR)/$*/$$NAME.Dockerfile.checksum); \
 		LAYER_ID="$${NAME}-$${LAYER_CHECKSUM}"; \
-		echo -n "-$${LAYER_ID}}-{{ checksum .buildcache/$${LAYER_ID}-cache-key }}" >> $@; \
+		echo -n "-$${NAME}}-{{ checksum .buildcache/$${LAYER_ID}-cache-key }}" >> $@; \
 	done; \
 	echo "'" >> $@; \
 	echo "BUILDER_LAYER_ID: $${NAME}_$$(cat $(DOCKERFILES_DIR)/$*/$$NAME.Dockerfile.checksum)" >> $@
@@ -216,7 +216,7 @@ $(PACKAGES_WITH_CHECKSUMS_DIR)/%.json: $(PACKAGES_DIR)/%.json $(DOCKERFILES_DIR)
 BUILD_COMMAND := make -C ../ -f release/build.mk build
 
 # COMMANDS files are created by this rule. They are one-line shell scripts that can
-# be invoked to produce a certain package.
+# be invoked from the release/ directory to produce a certain package.
 $(COMMANDS_DIR)/%.sh: $(PACKAGES_WITH_CHECKSUMS_DIR)/%.json
 	@{ echo "# Build package: $$(jq -r '.PACKAGE_NAME' < $<)"; } > $@ 
 	@{ jq "to_entries | .[] | \"\(.key)='\(.value)'\"" < $<; echo "$(BUILD_COMMAND)"; } | xargs >> $@
