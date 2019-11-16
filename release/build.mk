@@ -79,49 +79,8 @@ $(DOCKER_BUILDER_CACHE): $(addsuffix -layer-refs,$(LAYERS))
 .PHONY: debug
 debug: $(addsuffix -debug,$(LAYERS))
 
-### BEGIN Package building rules.
-###
-### This section dictates how we invoke the builder conainer to build the output package.
-
 # PACKAGE_OUT_ROOT is the root directory where the final packages will be written to.
 PACKAGE_OUT_ROOT ?= dist
-
-### Default package parameters when not explicitly set.
-### This is closely equivalent to 'make dev' in the top-level Makefile.
-### For releases, these are overrdden by entries in packages.lock.
-
-GOOS ?= $(shell go env GOOS 2>/dev/null || echo linux)
-GOARCH ?= $(shell go env GOARCH 2>/dev/null || echo amd64)
-CGO_ENABLED ?= 0
-GO111MODULE ?= off
-
-# GO_BUILD_TAGS is a comma-separated list of Go build tags, passed to -tags flag of 'go build'.
-GO_BUILD_TAGS ?= vault
-
-### Package parameters.
-
-# BINARY_NAME is literally the name of the product's binary file.
-BINARY_NAME ?= vault
-# PRODUCT_NAME is the top-level name of all editions of this product.
-PRODUCT_NAME ?= vault
-PRODUCT_VERSION ?= 0.0.0-dev
-# BUILD_VERSION is the major/minor/prerelease fields of the version.
-PRODUCT_VERSION_MMP ?= 0.0.0
-# BUILD_PRERELEASE is the prerelease field of the version. If nonempty, it must begin with a -.
-PRODUCT_VERSION_PRE ?= -dev
-# EDITION is used to differentiate alternate builds of the same commit, which may differ in
-# terms of build tags or other build inputs. EDITION should always form part of the BUNDLE_NAME.
-EDITION ?=
-
-### Calculated package parameters.
-
-# BUNDLE_NAME is the name of the release bundle.
-BUNDLE_NAME ?= $(PRODUCT_NAME)$(EDITION)
-# PACKAGE_NAME is the unique name of a specific build of this product.
-PACKAGE_NAME ?= $(BUNDLE_NAME)_$(PRODUCT_VERSION)_$(GOOS)_$(GOARCH)
-PACKAGE_FILENAME ?= $(PACKAGE_NAME).zip
-# PACKAGE is the zip file containing a specific binary.
-PACKAGE = $(OUT_DIR)/$(PACKAGE_FILENAME)
 
 # LDFLAGS: These linker commands inject build metadata into the binary.
 LDFLAGS += -X github.com/hashicorp/vault/sdk/version.GitCommit="$(PACKAGE_SOURCE_ID)"
@@ -130,6 +89,9 @@ LDFLAGS += -X github.com/hashicorp/vault/sdk/version.VersionPrerelease="$(PRODUC
 
 # OUT_DIR tells the Go toolchain where to place the binary.
 OUT_DIR := $(PACKAGE_OUT_ROOT)/$(PACKAGE_NAME)/$(PACKAGE_SOURCE_ID)/$(PACKAGE_SPEC_ID)
+PACKAGE_FILENAME := $(PACKAGE_NAME).zip
+# PACKAGE is the zip file containing a specific binary.
+PACKAGE := $(OUT_DIR)/$(PACKAGE_FILENAME)
 
 # GO_BUILD_VARS are environment variables affecting the go build
 # command that will be passed through to the go build command inside the
@@ -173,7 +135,6 @@ BUILD_COMMAND := \
 
 # ARCHIVE_COMMAND creates the package archive from the binary.
 ARCHIVE_COMMAND := cd /$(OUT_DIR) && zip $(PACKAGE_FILENAME) $(BINARY_NAME)
-PACKAGE_PATH := $(OUT_DIR)/$(PACKAGE_FILENAME) 
 
 ### Docker run command configuration.
 
@@ -184,21 +145,18 @@ DOCKER_RUN_FLAGS := --name $(BUILD_CONTAINER_NAME)
 # DOCKER_RUN_COMMAND ties everything together to build the final package as a
 # single docker run invocation.
 DOCKER_RUN_COMMAND = docker run $(DOCKER_RUN_FLAGS) $(BUILD_LAYER_IMAGE_NAME) $(DOCKER_SHELL) "$(BUILD_COMMAND) && $(ARCHIVE_COMMAND)"
-DOCKER_CP_COMMAND = docker cp $(BUILD_CONTAINER_NAME):/$(PACKAGE_PATH) $(PACKAGE_PATH)
+DOCKER_CP_COMMAND = docker cp $(BUILD_CONTAINER_NAME):/$(PACKAGE) $(PACKAGE)
 
-.PHONY: build
-build: $(PACKAGE)
+.PHONY: package
+package: $(PACKAGE)
 	@echo $<
 
-# PACKAGE assumes 'make static-image' has already been run.
-# It does not depend on the static image, as this simplifies cache re-use
-# on circleci.
-$(PACKAGE):
-	@# Instead of depending on the static image, we just check for its marker file
-	@# here. This allows us to skip checking the whole dependency tree, which means
-	@# we can buiild the package with just the static image, not relying on any of
-	@# the other base images to be present.
-	@if [ ! -f $(BUILD_LAYER_IMAGE) ]; then $(MAKE) -f $(THIS_FILE) $(BUILD_LAYER_IMAGE); fi
+ifeq ($(BUILD_LAYER_IMAGE),)
+$(error You must set BUILD_LAYER_IMAGE, try invoking 'make build' instead.)
+endif
+
+# PACKAGE builds the package.
+$(PACKAGE): $(BUILD_LAYER_IMAGE)
 	@mkdir -p $$(dirname $@)
 	@echo "==> Building package: $@"
 	@rm -rf ./$(OUT_DIR)
