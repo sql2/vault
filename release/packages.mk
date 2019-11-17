@@ -170,7 +170,10 @@ $(DOCKERFILES_DIR)/%: $(PACKAGES_DIR)/%.json $(LAYER_TEMPLATES)
 	@rm -rf $@; mkdir -p $@
 	@export BASE_LAYER_CHECKSUM="none"; \
 	export BASE_LAYER_ID=""; \
+	export BASE_LAYER_TYPE=""; \
+	export INDEX=0; \
 	for NAME in $(LAYER_NAMES); do \
+		((INDEX++)); \
 		DF=$@/$$NAME.Dockerfile; \
 		T=$(LAYER_TEMPLATE_DIR)/$$NAME; \
 		gomplate -f $$T -d vars=$< > $$DF; \
@@ -192,9 +195,14 @@ $(DOCKERFILES_DIR)/%: $(PACKAGES_DIR)/%.json $(LAYER_TEMPLATES)
 		echo "LAYER_$${LAYER_ID}_SOURCE_INCLUDE := $${SOURCE_INCLUDE}" >> $$MKFILE; \
 		echo "LAYER_$${LAYER_ID}_SOURCE_EXCLUDE := $${SOURCE_EXCLUDE}" >> $$MKFILE; \
 		echo '$$(eval $$(call LAYER,$$(LAYER_'$${LAYER_ID}'_ID),$$(LAYER_'$${LAYER_ID}'_BASE_LAYER),$$(LAYER_'$${LAYER_ID}'_SOURCE_INCLUDE),$$(LAYER_'$${LAYER_ID}'_SOURCE_EXCLUDE)))' >> $$MKFILE; \
+		YMLFILE="layers.lock/$$LAYER_ID.yml"; \
+		rm -f $$YMLFILE; \
+		printf "depth: %s\ntype: '%s'\nchecksum: '%s'\n" "$$INDEX" "$$NAME" "$$LAYER_CHECKSUM" >> $$YMLFILE; \
+		printf "parent_type: '%s'\nparent_checksum: '%s'" "$$BASE_LAYER_TYPE" "$$BASE_LAYER_CHECKSUM" >> $$YMLFILE; \
 		echo "Comment: Set BASE_LAYER_CHECKSUM and ID ready for the next layer." > /dev/null; \
 		BASE_LAYER_CHECKSUM=$$LAYER_CHECKSUM; \
 		BASE_LAYER_ID=$$LAYER_ID; \
+		BASE_LAYER_TYPE=$$NAME; \
 	done; \
 	echo "BUILD_LAYER_IMAGE = \$$($${LAYER_ID}_IMAGE)" >> $$MKFILE; \
 	echo "BUILD_LAYER_IMAGE_NAME = \$$($${LAYER_ID}_IMAGE_NAME)" >> $$MKFILE; \
@@ -215,12 +223,17 @@ $(PACKAGES_WITH_CHECKSUMS_DIR)/%.json: $(PACKAGES_DIR)/%.json $(DOCKERFILES_DIR)
 	@echo "PACKAGE_SPEC_ID: $$(sha256sum < $@ | cut -d' ' -f1)" >> $@
 	@yq . < $@ | sponge $@
 
+.tmp/layer-info.yml: $(DOCKERFILES)
+	@find layers.lock -name '*.yml' | xargs yq -ys '. | sort_by(.depth) | { layers: . }' > $@
+	@find layers.lock -name '*.yml' | xargs rm
+
 PACKAGE_COMMAND := make -C ../ -f release/build.mk package
 
 # LIST just plonks all the package json files generated above into an array,
 # and converts it to YAML.
-$(LIST): $(PACKAGES_WITH_CHECKSUMS)
-	@jq -s '{ packages: . }' $(PACKAGES_WITH_CHECKSUMS) | yq -y . >$@
+$(LIST): $(PACKAGES_WITH_CHECKSUMS) .tmp/layer-info.yml
+	@cat .tmp/layer-info.yml > $@
+	@jq -s '{ packages: . }' $(PACKAGES_WITH_CHECKSUMS) | yq -y . >> $@
 
 $(LOCK): $(LIST)
 	@echo "### ***" > $@
