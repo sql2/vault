@@ -4,6 +4,10 @@
 # by expanding its packages using all defaults and templates.
 # It also generates the layered Dockerfiles for each package.
 
+# Include config.mk relative to this file (this allows us to invoke this file
+# from different directories safely.
+include $(shell dirname $(lastword $(MAKEFILE_LIST)))/config.mk
+
 # Disable built-in rules.
 MAKEFLAGS += --no-builtin-rules
 .SUFFIXES:
@@ -200,15 +204,23 @@ $(PACKAGES_WITH_CHECKSUMS_DIR)/%.json: $(PACKAGES_DIR)/%.json $(DOCKERFILES_DIR)
 	@# Add references to the layer Dockerfiles.
 	@# Add the package spec ID.
 	@cp $< $@
-	@# TODO factor out this loop which just grabs the last layer name.
 	@echo -n "BUILDER_CACHE_KEY: 'cache" >> $@
 	@i=0; for NAME in $(LAYER_NAMES); do \
 		((i++)); \
 		LAYER_CHECKSUM=$$(cat $(DOCKERFILES_DIR)/$*/$$NAME.Dockerfile.checksum); \
 		LAYER_ID="$${NAME}-$${LAYER_CHECKSUM}"; \
-		echo -n "-$${NAME}-{{ checksum .buildcache/$${LAYER_ID}-cache-key }}" >> $@; \
+		echo -n "-$${NAME}-{{ checksum $(CACHE_ROOT)/$${LAYER_ID}-cache-key }}" >> $@; \
 	done; \
-	echo "'" >> $@; \
+	echo "'" >> $@
+	@echo "BUILDER_CACHE_KEY_LIST:" >> $@
+	@LAYER_SEGMENTS="cache"; i=0; for NAME in $(LAYER_NAMES); do \
+		((i++)); \
+		LAYER_CHECKSUM=$$(cat $(DOCKERFILES_DIR)/$*/$$NAME.Dockerfile.checksum); \
+		LAYER_ID="$${NAME}-$${LAYER_CHECKSUM}"; \
+		LAYER_SEGMENT="$${NAME}-{{ checksum $(CACHE_ROOT)/$${LAYER_ID}-cache-key }}"; \
+		LAYER_SEGMENTS="$$LAYER_SEGMENTS-$$LAYER_SEGMENT"; \
+		echo "  - $${LAYER_SEGMENTS}" >> $@; \
+	done; \
 	echo "BUILDER_LAYER_ID: $${NAME}_$$(cat $(DOCKERFILES_DIR)/$*/$$NAME.Dockerfile.checksum)" >> $@
 	@echo "PACKAGE_SPEC_ID: $$(sha256sum < $@ | cut -d' ' -f1)" >> $@
 	@yq . < $@ | sponge $@
