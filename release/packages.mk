@@ -204,34 +204,18 @@ $(PACKAGES_WITH_CHECKSUMS_DIR)/%.json: $(PACKAGES_DIR)/%.json $(DOCKERFILES_DIR)
 	@# Add references to the layer Dockerfiles.
 	@# Add the package spec ID.
 	@cp $< $@
-	@echo -n "BUILDER_CACHE_KEY: 'cache" >> $@
-	@i=0; for NAME in $(LAYER_NAMES); do \
-		((i++)); \
+	@echo "CIRCLECI_CACHE_KEY_SEGMENTS:" >> $@
+	@for NAME in $(LAYER_NAMES); do \
 		LAYER_CHECKSUM=$$(cat $(DOCKERFILES_DIR)/$*/$$NAME.Dockerfile.checksum); \
 		LAYER_ID="$${NAME}-$${LAYER_CHECKSUM}"; \
-		echo -n "-$${NAME}-{{ checksum $(CACHE_ROOT)/$${LAYER_ID}-cache-key }}" >> $@; \
-	done; \
-	echo "'" >> $@
-	@echo "BUILDER_CACHE_KEY_LIST:" >> $@
-	@LAYER_SEGMENTS="cache"; i=0; for NAME in $(LAYER_NAMES); do \
-		((i++)); \
-		LAYER_CHECKSUM=$$(cat $(DOCKERFILES_DIR)/$*/$$NAME.Dockerfile.checksum); \
-		LAYER_ID="$${NAME}-$${LAYER_CHECKSUM}"; \
-		LAYER_SEGMENT="$${NAME}-{{ checksum $(CACHE_ROOT)/$${LAYER_ID}-cache-key }}"; \
-		LAYER_SEGMENTS="$$LAYER_SEGMENTS-$$LAYER_SEGMENT"; \
-		echo "  - $${LAYER_SEGMENTS}" >> $@; \
+		LAYER_SEGMENT="$${NAME}-{{checksum $(CACHE_ROOT)/$${LAYER_ID}-cache-key}}"; \
+		echo "  - $${LAYER_SEGMENT}" >> $@; \
 	done; \
 	echo "BUILDER_LAYER_ID: $${NAME}_$$(cat $(DOCKERFILES_DIR)/$*/$$NAME.Dockerfile.checksum)" >> $@
 	@echo "PACKAGE_SPEC_ID: $$(sha256sum < $@ | cut -d' ' -f1)" >> $@
 	@yq . < $@ | sponge $@
 
 PACKAGE_COMMAND := make -C ../ -f release/build.mk package
-
-# COMMANDS files are created by this rule. They are one-line shell scripts that can
-# be invoked from the release/ directory to produce a certain package.
-$(COMMANDS_DIR)/%.sh: $(PACKAGES_WITH_CHECKSUMS_DIR)/%.json
-	@{ echo "# Build package: $$(jq -r '.PACKAGE_NAME' < $<)"; } > $@ 
-	@{ jq "to_entries | .[] | \"\(.key)='\(.value)'\"" < $<; echo "$(PACKAGE_COMMAND)"; } | xargs >> $@
 
 # LIST just plonks all the package json files generated above into an array,
 # and converts it to YAML.
@@ -244,4 +228,11 @@ $(LOCK): $(LIST)
 	@echo "### INSTEAD: Edit or merge the source in this directory then run 'make $@'." >> $@
 	@echo "### ***" >> $@
 	@cat $< >> $@
+
+# COMMANDS files are created by this rule. They are one-line shell scripts that can
+# be invoked from the release/ directory to produce a certain package.
+$(COMMANDS_DIR)/%.sh: $(PACKAGES_WITH_CHECKSUMS_DIR)/%.json $(LOCK)
+	@{ echo "# Build package: $$(jq -r '.PACKAGE_NAME' < $<)"; } > $@ 
+	@{ jq "to_entries | .[] | select((.value | type)!=\"array\" and (.value | type)!=\"object\") | \"\(.key)='\(.value)'\"" \
+		< $<; echo "$(PACKAGE_COMMAND)"; } | xargs >> $@
 
