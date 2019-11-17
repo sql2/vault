@@ -319,7 +319,7 @@ save-builder-cache: $(DOCKER_BUILDER_CACHE)
 	@ls -lh $<
 
 load-builder-cache:
-	docker load $(DOCKER_BUILDER_CACHE)
+	docker load -i $(DOCKER_BUILDER_CACHE)
 
 $(DOCKER_BUILDER_CACHE): $(addsuffix -layer-refs,$(LAYERS))
 	@cat $(addsuffix /image.layer_refs,$(LAYER_CACHES)) | sort | uniq > $(DOCKER_LAYER_LIST)
