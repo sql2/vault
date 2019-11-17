@@ -22,7 +22,11 @@ build: .tmp/default-package-index commands
 
 save-builder-cache:
 	@echo "==> Exporting Docker build cache"
-	@$(MAKE) -C ../ -f release/build.mk save-all-layers
+	@$(MAKE) -C ../ -f release/layer.mk save-builder-cache
+
+load-builder-cache:
+	@echo "==> Loading Docker build cache"
+	@$(MAKE) -C ../ -f release/layer.mk load-builder-cache
 
 build-all: commands
 	cd ../ && $(SHELL) "$$(cat release/.tmp/all-commands.sh)"

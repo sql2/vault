@@ -6,7 +6,9 @@
 # NOTE: This file should always run as though it were in the repo root, so all paths
 # are relative to the repo root.
 
-SHELL := /usr/bin/env bash -euo pipefail -c
+# Include config.mk relative to this file (this allows us to invoke this file
+# from different directories safely.
+include $(shell dirname $(lastword $(MAKEFILE_LIST)))/config.mk
 
 # Make sure we have all the necessary inputs.
 # Ensure all of these are set in packages.lock
@@ -41,73 +43,16 @@ ifeq ($(PACKAGE_SPEC_ID),)
 $(error You must set PACKAGE_SPEC_ID, try invoking 'make build' instead.)
 endif
 
-CACHE_ROOT := .buildcache
+# Include the layers driver.
+include $(RELEASE_DIR)/layer.mk
 
-THIS_FILE := $(lastword $(MAKEFILE_LIST))
-THIS_DIR := $(shell dirname $(THIS_FILE))
-
-# ALWAYS_EXCLUDE_SOURCE prevents source from these directories from taking
-# part in the SOURCE_ID, or from being sent to the builder image layers.
-# This is important for allowing the head of master to build other commits
-# where this build system has not been vendored.
-#
-# Source in release/ is encoded as PACKAGE_SPEC_ID and included in paths
-# and cache keys. Source in .circleci/ should not do much more than call
-# code in the release/ directory.
-ALWAYS_EXCLUDE_SOURCE     := release/ .circleci/
-# ALWAYS_EXCLUD_SOURCE_GIT is git path filter parlance for the above.
-ALWAYS_EXCLUDE_SOURCE_GIT := ':(exclude)release/' ':(exclude).circleci/'
-
-# DOCKER_LAYER_LIST is used to dump the name of every docker ref in use
-# by all of the current builder images. By running 'docker save' against
-# this list, we end up with a tarball that can pre-populate the docker
-# cache to avoid unnecessary rebuilds.
-DOCKER_LAYER_LIST := $(CACHE_ROOT)/docker-layer-list
-DOCKER_BUILDER_CACHE := $(CACHE_ROOT)/docker-builder-cache.tar.gz
-
-# Even though layers may have different Git revisions, we always want to
-# honour either HEAD or the specified PRODUCT_REVISION for compiling the
-# final binaries, as this revision is the one picked by a human to form
-# the release.
-ifeq ($(PRODUCT_REVISION),)
-GIT_REF := HEAD
-ALLOW_DIRTY ?= YES
+# Determine the SOURCE_ID for this package.
+ifeq ($(ALLOW_DIRTY),YES)
 DIRTY := $(shell git diff --exit-code $(GIT_REF) -- $(ALWAYS_EXCLUDE_SOURCE_GIT) > /dev/null 2>&1 || echo "dirty_")
 PACKAGE_SOURCE_ID := $(DIRTY)$(shell git rev-parse $(GIT_REF))
 else
-GIT_REF := $(PRODUCT_REVISION)
-ALLOW_DIRTY := NO
 PACKAGE_SOURCE_ID := $(shell git rev-parse $(GIT_REF))
 endif
-
-DOCKERFILES_DIR := $(THIS_DIR)/layers.lock
-
-# Include the layers driver.
-include $(THIS_DIR)/layer.mk
-
-# Include the generated instructions to build each layer.
-include $(shell find release/layers.lock -name '*.mk')
-
-UPDATE_MARKERS_OUTPUT := $(strip $(foreach L,$(LAYERS),$(shell $(call $(L)_UPDATE_MARKER_FILE))))
-ifneq ($(UPDATE_MARKERS_OUTPUT),)
-$(info $(UPDATE_MARKERS_OUTPUT))
-endif
-
-write-cache-keys: $(addsuffix -write-cache-key,$(LAYERS))
-	@echo "==> All cache keys written."
-
-build-all-layers: $(addsuffix -image,$(LAYERS))
-	@echo "==> All builder layers built."
-
-save-all-layers: $(DOCKER_BUILDER_CACHE)
-	@ls -lh $<
-
-$(DOCKER_BUILDER_CACHE): $(addsuffix -layer-refs,$(LAYERS))
-	@cat $(addsuffix /image.layer_refs,$(LAYER_CACHES)) | sort | uniq > $(DOCKER_LAYER_LIST)
-	@cat $(DOCKER_LAYER_LIST) | xargs docker save | gzip > $(DOCKER_BUILDER_CACHE)
-
-.PHONY: debug
-debug: $(addsuffix -debug,$(LAYERS))
 
 # PACKAGE_OUT_ROOT is the root directory where the final packages will be written to.
 PACKAGE_OUT_ROOT ?= dist

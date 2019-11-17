@@ -59,7 +59,11 @@
 # e.g. for the "static" image above we refer to it as $(static_IMAGE_NAME). You can then
 # use this image for anything you like, usually for building release packages.
 
-SHELL := /usr/bin/env bash -euo pipefail -c
+# Include config.mk relative to this file (this allows us to invoke this file
+# from different directories safely.
+include $(shell dirname $(lastword $(MAKEFILE_LIST)))/config.mk
+
+DOCKERFILES_DIR := $(RELEASE_DIR)/layers.lock
 
 ### Utilities and constants
 GIT_EXCLUDE_PREFIX := :(exclude)
@@ -288,3 +292,39 @@ $$($(1)_LAYER_REFS):
 endef
 
 ### END LAYER
+
+# Include the generated instructions to build each layer.
+include $(shell find release/layers.lock -name '*.mk')
+
+# Eagerly update the docker image marker files.
+UPDATE_MARKERS_OUTPUT := $(strip $(foreach L,$(LAYERS),$(shell $(call $(L)_UPDATE_MARKER_FILE))))
+ifneq ($(UPDATE_MARKERS_OUTPUT),)
+$(info $(UPDATE_MARKERS_OUTPUT))
+endif
+
+# DOCKER_LAYER_LIST is used to dump the name of every docker ref in use
+# by all of the current builder images. By running 'docker save' against
+# this list, we end up with a tarball that can pre-populate the docker
+# cache to avoid unnecessary rebuilds.
+DOCKER_LAYER_LIST := $(CACHE_ROOT)/docker-layer-list
+DOCKER_BUILDER_CACHE := $(CACHE_ROOT)/docker-builder-cache.tar.gz
+
+write-cache-keys: $(addsuffix -write-cache-key,$(LAYERS))
+	@echo "==> All cache keys written."
+
+build-all-layers: $(addsuffix -image,$(LAYERS))
+	@echo "==> All builder layers built."
+
+save-builder-cache: $(DOCKER_BUILDER_CACHE)
+	@ls -lh $<
+
+load-builder-cache:
+	docker load $(DOCKER_BUILDER_CACHE)
+
+$(DOCKER_BUILDER_CACHE): $(addsuffix -layer-refs,$(LAYERS))
+	@cat $(addsuffix /image.layer_refs,$(LAYER_CACHES)) | sort | uniq > $(DOCKER_LAYER_LIST)
+	@cat $(DOCKER_LAYER_LIST) | xargs docker save | gzip > $(DOCKER_BUILDER_CACHE)
+
+.PHONY: debug
+debug: $(addsuffix -debug,$(LAYERS))
+
