@@ -45,7 +45,6 @@ import (
 	"github.com/hashicorp/vault/helper/reload"
 	dbMysql "github.com/hashicorp/vault/plugins/database/mysql"
 	dbPostgres "github.com/hashicorp/vault/plugins/database/postgresql"
-	dbProxysql "github.com/hashicorp/vault/plugins/database/proxysql"
 	"github.com/hashicorp/vault/sdk/framework"
 	"github.com/hashicorp/vault/sdk/helper/consts"
 	"github.com/hashicorp/vault/sdk/helper/logging"
@@ -53,6 +52,8 @@ import (
 	"github.com/hashicorp/vault/sdk/logical"
 	"github.com/hashicorp/vault/sdk/physical"
 	testing "github.com/mitchellh/go-testing-interface"
+
+	//	dbProxysql "github.com/sql/vault/plugins/database/proxysql"
 
 	physInmem "github.com/hashicorp/vault/sdk/physical/inmem"
 )
@@ -1779,7 +1780,7 @@ func NewMockBuiltinRegistry() *mockBuiltinRegistry {
 		forTesting: map[string]consts.PluginType{
 			"mysql-database-plugin":      consts.PluginTypeDatabase,
 			"postgresql-database-plugin": consts.PluginTypeDatabase,
-			"proxysql-database-plugin":   consts.PluginTypeDatabase,
+			//			"proxysql-database-plugin":   consts.PluginTypeDatabase,
 		},
 	}
 }
@@ -1799,9 +1800,9 @@ func (m *mockBuiltinRegistry) Get(name string, pluginType consts.PluginType) (fu
 	if name == "postgresql-database-plugin" {
 		return dbPostgres.New, true
 	}
-	if name == "proxysql-database-plugin" {
-		return dbProxysql.New(dbProxysql.MetadataLen, dbProxysql.MetadataLen, dbProxysql.UsernameLen), true
-	}
+	//	if name == "proxysql-database-plugin" {
+	//		return dbProxysql.New(dbProxysql.MetadataLen, dbProxysql.MetadataLen, dbProxysql.UsernameLen), true
+	//	}
 	return dbMysql.New(dbMysql.MetadataLen, dbMysql.MetadataLen, dbMysql.UsernameLen), true
 }
 
@@ -1820,7 +1821,7 @@ func (m *mockBuiltinRegistry) Keys(pluginType consts.PluginType) []string {
 		"mysql-rds-database-plugin",
 		"mysql-legacy-database-plugin",
 		"postgresql-database-plugin",
-		"proxysql-database-plugin",
+		//		"proxysql-database-plugin",
 		"elasticsearch-database-plugin",
 		"mssql-database-plugin",
 		"cassandra-database-plugin",
