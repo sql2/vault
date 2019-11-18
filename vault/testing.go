@@ -1800,7 +1800,7 @@ func (m *mockBuiltinRegistry) Get(name string, pluginType consts.PluginType) (fu
 		return dbPostgres.New, true
 	}
 	if name == "proxysql-database-plugin" {
-		return nil, false
+		return dbProxysql.New(dbProxysql.MetadataLen, dbProxysql.MetadataLen, dbProxysql.UsernameLen), true
 	}
 	return dbMysql.New(dbMysql.MetadataLen, dbMysql.MetadataLen, dbMysql.UsernameLen), true
 }
