@@ -31,6 +31,7 @@ import (
 	dbMssql "github.com/hashicorp/vault/plugins/database/mssql"
 	dbMysql "github.com/hashicorp/vault/plugins/database/mysql"
 	dbPostgres "github.com/hashicorp/vault/plugins/database/postgresql"
+	dbProxysql "github.com/hashicorp/vault/plugins/database/proxysql"
 
 	logicalAd "github.com/hashicorp/vault-plugin-secrets-ad/plugin"
 	logicalAlicloud "github.com/hashicorp/vault-plugin-secrets-alicloud"
@@ -95,6 +96,7 @@ func newRegistry() *registry {
 			"mysql-legacy-database-plugin": dbMysql.New(credsutil.NoneLength, dbMysql.LegacyMetadataLen, dbMysql.LegacyUsernameLen),
 
 			"postgresql-database-plugin":    dbPostgres.New,
+			"proxysql-database-plugin":      dbProxysql.New(dbProxysql.MetadataLen, dbProxysql.MetadataLen, dbProxysql.UsernameLen),
 			"mssql-database-plugin":         dbMssql.New,
 			"cassandra-database-plugin":     dbCass.New,
 			"mongodb-database-plugin":       dbMongo.New,
