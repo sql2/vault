@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/hashicorp/vault/api"
-	"github.com/hashicorp/vault/plugins/database/mysql"
+	"github.com/sql2/vault/plugins/database/proxysql"
 )
 
 func main() {
