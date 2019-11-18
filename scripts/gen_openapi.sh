@@ -58,6 +58,7 @@ vault secrets enable mysql
 vault secrets enable nomad
 vault secrets enable pki
 vault secrets enable postgresql
+vault secrets enable proxysql 
 vault secrets enable rabbitmq
 vault secrets enable ssh
 vault secrets enable totp
