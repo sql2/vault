@@ -13,7 +13,7 @@ func main() {
 	flags := apiClientMeta.FlagSet()
 	flags.Parse(os.Args[1:])
 
-	err := mysql.Run(apiClientMeta.GetTLSConfig())
+	err := proxysql.Run(apiClientMeta.GetTLSConfig())
 	if err != nil {
 		log.Println(err)
 		os.Exit(1)
