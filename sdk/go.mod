@@ -1,4 +1,4 @@
-module github.com/sql2/vault/sdk
+module github.com/hashicorp/vault/sdk
 
 go 1.12
 
