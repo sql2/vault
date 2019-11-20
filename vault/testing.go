@@ -45,7 +45,7 @@ import (
 	"github.com/hashicorp/vault/helper/reload"
 	dbMysql "github.com/hashicorp/vault/plugins/database/mysql"
 	dbPostgres "github.com/hashicorp/vault/plugins/database/postgresql"
-	dbProxysql "github.com/sql2/vault/plugins/database/proxysql"
+	dbProxysql "github.com/hashicorp/vault/plugins/database/proxysql"
 	"github.com/hashicorp/vault/sdk/framework"
 	"github.com/hashicorp/vault/sdk/helper/consts"
 	"github.com/hashicorp/vault/sdk/helper/logging"
@@ -53,7 +53,6 @@ import (
 	"github.com/hashicorp/vault/sdk/logical"
 	"github.com/hashicorp/vault/sdk/physical"
 	testing "github.com/mitchellh/go-testing-interface"
-
 
 	physInmem "github.com/hashicorp/vault/sdk/physical/inmem"
 )

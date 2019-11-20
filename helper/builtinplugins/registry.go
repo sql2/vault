@@ -31,7 +31,7 @@ import (
 	dbMssql "github.com/hashicorp/vault/plugins/database/mssql"
 	dbMysql "github.com/hashicorp/vault/plugins/database/mysql"
 	dbPostgres "github.com/hashicorp/vault/plugins/database/postgresql"
-	dbProxysql "github.com/sql2/vault/plugins/database/proxysql"
+	dbProxysql "github.com/hashicorp/vault/plugins/database/proxysql"
 
 	logicalAd "github.com/hashicorp/vault-plugin-secrets-ad/plugin"
 	logicalAlicloud "github.com/hashicorp/vault-plugin-secrets-alicloud"
