@@ -1,8 +1,8 @@
-module github.com/hashicorp/vault/api
+module github.com/sql2/vault/api
 
 go 1.12
 
-replace github.com/hashicorp/vault/sdk => ../sdk
+replace github.com/sql2/vault/sdk => ../sdk
 
 require (
 	github.com/go-test/deep v1.0.2-0.20181118220953-042da051cf31
