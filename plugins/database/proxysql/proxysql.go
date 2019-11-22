@@ -18,15 +18,18 @@ import (
 
 const (
 	defaultMysqlRevocationStmts = `
-		REVOKE ALL PRIVILEGES, GRANT OPTION FROM '{{name}}'@'%'; 
-		DROP USER '{{name}}'@'%'
+		DELETE FROM mysql_users WHERE username = '{{name}}';
+		LOAD MYSQL USERS TO RUNTIME;
+		SAVE MYSQL USERS TO DISK;	
 	`
 
 	defaultMySQLRotateCredentialsSQL = `
-		ALTER USER '{{username}}'@'%' IDENTIFIED BY '{{password}}';
+		UPDATE mysql_users SET username='{{username}}', password='{{password}}' WHERE username='{{username}}';
+		LOAD MYSQL USERS TO RUNTIME;
+		SAVE MYSQL USERS TO DISK;
 	`
 
-	mySQLTypeName = "proxysql"
+	mySQLTypeName = "mysql"
 )
 
 var (
